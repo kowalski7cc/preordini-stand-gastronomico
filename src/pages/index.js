@@ -1,13 +1,13 @@
 import * as React from "react";
-import { graphql } from "gatsby";
+import { graphql, navigate } from "gatsby";
 
 import Layout from "../components/layout";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Accordion from "react-bootstrap/Accordion";
-import { Col, Container, Row } from "react-bootstrap";
+import { Col, Row } from "react-bootstrap";
 
-const ItemComponent = ({ item }) => {
+const ItemComponent = ({ item, onChange }) => {
   const [count, setCount] = React.useState(0);
 
   return (
@@ -20,21 +20,35 @@ const ItemComponent = ({ item }) => {
       <Col xs={4} sm={3}>
         <p className="text-end">{item.prezzo.toFixed(2)}€</p>
       </Col>
-      <div class="input-group w-100 btn-group" role="group">
+      <div className="input-group w-100 btn-group" role="group">
         <button
           type="button"
-          class="btn btn-primary"
-          onClick={() => setCount(count - 1 >= 0 ? count - 1 : 0)}
+          className="btn btn-primary"
+          onClick={() => {
+            var c = count - 1 >= 0 ? count - 1 : 0;
+            setCount(c);
+            onChange && onChange({ id: item.sqliteId, amount: c });
+          }}
         >
-          -
+          <i className="bi bi-dash-lg" aria-label="rimuovi" />
         </button>
-        <Form.Control type="number" readOnly={true} min="0" value={count} />
+        <Form.Control
+          type="number"
+          disabled={true}
+          readOnly={true}
+          min="0"
+          value={count}
+        />
         <button
           type="button"
-          class="btn btn-primary"
-          onClick={() => setCount(count + 1)}
+          className="btn btn-primary"
+          onClick={() => {
+            var c = count + 1;
+            setCount(c);
+            onChange && onChange({ id: item.sqliteId, amount: c });
+          }}
         >
-          +
+          <i className="bi bi-plus-lg" aria-label="aggiungi" />
         </button>
       </div>
     </Row>
@@ -42,43 +56,81 @@ const ItemComponent = ({ item }) => {
 };
 
 const IndexPage = ({ data }) => {
+  const [validated, setValidated] = React.useState(false);
+  const [state, setState] = React.useState({
+    cliente: null,
+    numeroTavolo: null,
+    coperti: 1,
+    righe: [],
+  });
+
+  const updateRow = (row) => {
+    const index = state.righe.findIndex((r) => r.id === row.id);
+    if (index >= 0) {
+      const righe = [...state.righe];
+      if (row.qta === 0) {
+        righe.splice(index, 1);
+        setState({ ...state, righe });
+      } else {
+        righe[index] = row;
+        setState({ ...state, righe });
+      }
+    } else if (row.qta > 0) {
+      setState({ ...state, righe: [...state.righe, row] });
+    }
+  };
+
   return (
-    <Layout className="mb-5" title="Preordine">
-      <Form>
-        <Form.Group className="mb-3" controlId="formBasicEmail">
+    <Layout className="mb-5" title="Nuovo preordine">
+      <Form validated={validated}>
+        <Form.Group className="mb-3" controlId="orderName">
           <Form.Label>Nome</Form.Label>
-          <Form.Control type="email" placeholder="Inserisci il tuo nome" />
+          <Form.Control
+            type="text"
+            placeholder="Inserisci il tuo nome"
+            onChange={(v) => setState({ ...state, cliente: v.target.value })}
+          />
         </Form.Group>
 
-        <Form.Group className="mb-3" controlId="formBasicPassword">
+        <Form.Group className="mb-3" controlId="orderTable">
           <Form.Label>Numero del tavolo</Form.Label>
           <Form.Control
             type="number"
             placeholder="Inserisci il numero del tavolo"
             min="0"
             required
+            onChange={(v) =>
+              setState({ ...state, numeroTavolo: v.target.value })
+            }
           />
         </Form.Group>
-        <Form.Group className="mb-3" controlId="formBasicPassword">
+        <Form.Group className="mb-3" controlId="orderPeople">
           <Form.Label>Numero di persone</Form.Label>
           <Form.Control
             type="number"
-            value="1"
+            onChange={(v) => setState({ ...state, coperti: v.target.value })}
             required
             min="1"
+            defaultValue="1"
             placeholder="Inserisci il numero di persone"
           />
         </Form.Group>
       </Form>
 
-      <Accordion className="mb-5" defaultActiveKey="0">
+      <Accordion className="mb-4  " defaultActiveKey="0">
         {data.categorie.nodes.map((categoria, index) => (
           <Accordion.Item eventKey={index} key={index}>
             <Accordion.Header>{categoria.descrizione}</Accordion.Header>
             <Accordion.Body>
               {categoria.items.length > 0
                 ? categoria.items.map((item, index) => (
-                    <ItemComponent key={index} item={item} />
+                    <ItemComponent
+                      key={index}
+                      item={item}
+                      onChange={({ id, amount }) =>
+                        updateRow({ id: id, qta: amount })
+                      }
+                    />
                   ))
                 : "Nessun articolo disponibile in questa categoria"}
             </Accordion.Body>
@@ -86,13 +138,13 @@ const IndexPage = ({ data }) => {
         ))}
       </Accordion>
 
-      <div class="d-grid gap-2">
-        <Button variant="primary" className="w-100">
+      <div className="d-grid gap-2 mb-3">
+        <Button
+          variant="primary"
+          onClick={() => navigate("/checkout", { state: state })}
+          className="w-100"
+        >
           Vedi resoconto
-        </Button>
-
-        <Button variant="danger" className="w-100">
-          Cancella ordine
         </Button>
       </div>
     </Layout>
@@ -116,4 +168,4 @@ export const query = graphql`
 `;
 
 export default IndexPage;
-export const Head = () => <title>Preordine</title>;
+export const Head = () => <title>Nuovo preordine</title>;
