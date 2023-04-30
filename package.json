@@ -1,0 +1,30 @@
+{
+  "name": "preordini-stand-gastronomico",
+  "version": "1.0.0",
+  "private": true,
+  "description": "...",
+  "author": "kowalski7cc",
+  "keywords": [
+    "gatsby"
+  ],
+  "scripts": {
+    "develop": "gatsby develop -H 0.0.0.0",
+    "start": "gatsby develop",
+    "build": "gatsby build",
+    "serve": "gatsby serve",
+    "clean": "gatsby clean"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "gatsby": "^5.9.0",
+    "gatsby-plugin-image": "3.9.0",
+    "gatsby-plugin-sass": "6.9.0",
+    "gatsby-source-sqlite": "1.0.0",
+    "sass": "1.62.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-bootstrap": "^2.7.4",
+    "bootstrap": "5.2.3",
+    "bootstrap-icons": "1.10.5"
+  }
+}
