@@ -11,19 +11,19 @@ const CheckoutPage = ({ data, location }) => {
     return acc;
   }, {});
 
-  let receipt = location.state;
+  let receipt = location.state || { righe: [] };
 
   return (
     <Layout className="mb-5" back={true} title="Riepilogo ordine">
       <h2>Ordine per {receipt.cliente || "Anonimo"}</h2>
       <ul className="list-unstyled mb-4">
-        <li>
+        <li key={"tavolo"}>
           <i className="bi bi-geo-alt me-2" />
           {receipt.numeroTavolo
             ? "Tavolo " + receipt.numeroTavolo
             : "Da asporto"}
         </li>
-        <li>
+        <li key="coperti">
           <i className="bi bi-people me-2" />
           {receipt.coperti || 0}
         </li>
@@ -35,8 +35,8 @@ const CheckoutPage = ({ data, location }) => {
             <th className="text-end">Quantità</th>
             <th>Prezzo</th>
           </tr>
-          {receipt.righe.map((item) => (
-            <tr>
+          {receipt.righe.map((item, index) => (
+            <tr key={index}>
               <td>{itemsNames[item.id].description}</td>
               <td className="text-end">{item.qta}</td>
               <td>{(itemsNames[item.id].price || 0).toFixed(2)}€</td>
@@ -49,10 +49,10 @@ const CheckoutPage = ({ data, location }) => {
             <td></td>
             <td>
               {(
-                receipt.righe.reduce((acc, item) => {
-                  acc += itemsNames[item.id].price * item.amount;
-                  return acc;
-                }, 0) || 0
+                receipt.righe.reduce(
+                  (acc, item) => (acc += itemsNames[item.id].price * item.qta),
+                  0
+                ) || 0
               ).toFixed(2)}
               €
             </td>
@@ -94,4 +94,4 @@ export const query = graphql`
 `;
 
 export default CheckoutPage;
-export const Head = () => <title>Riepilogo ordine</title>;
+export const Head = () => <title>Riepilogo ordine - Sagra</title>;

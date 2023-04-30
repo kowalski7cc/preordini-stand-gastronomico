@@ -29,4 +29,4 @@ const OrderPage = ({ location }) => {
 
 export default OrderPage;
 
-export const Head = () => <title>Ordine</title>;
+export const Head = () => <title>Ordine - Sagra</title>;
