@@ -167,4 +167,4 @@ export const query = graphql`
 `;
 
 export default IndexPage;
-export const Head = () => <title>Nuovo preordine</title>;
+export const Head = () => <title>Nuovo preordine - Sagra</title>;
