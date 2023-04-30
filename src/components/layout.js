@@ -2,8 +2,8 @@ import * as React from "react";
 import "../style/main.scss";
 import Container from "react-bootstrap/Container";
 import Navbar from "react-bootstrap/Navbar";
-import { Link, navigate } from "gatsby";
-import { Button } from "react-bootstrap";
+import Button from "react-bootstrap/Button";
+import { navigate } from "gatsby";
 
 const Layout = ({ title, children, back }) => (
   <>
@@ -11,7 +11,13 @@ const Layout = ({ title, children, back }) => (
       <Container>
         <Navbar.Brand>
           {back && (
-            <i onClick={() => navigate(-1)} className="bi bi-arrow-left me-3" />
+            <Button
+              variant="outline-dark"
+              className="me-3"
+              onClick={() => navigate(-1)}
+            >
+              <i className="bi bi-arrow-left" />
+            </Button>
           )}
           {title}
         </Navbar.Brand>

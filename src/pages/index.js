@@ -56,7 +56,6 @@ const ItemComponent = ({ item, onChange }) => {
 };
 
 const IndexPage = ({ data }) => {
-  const [validated, setValidated] = React.useState(false);
   const [state, setState] = React.useState({
     cliente: null,
     numeroTavolo: null,
@@ -82,7 +81,7 @@ const IndexPage = ({ data }) => {
 
   return (
     <Layout className="mb-5" title="Nuovo preordine">
-      <Form validated={validated}>
+      <Form>
         <Form.Group className="mb-3" controlId="orderName">
           <Form.Label>Nome</Form.Label>
           <Form.Control
