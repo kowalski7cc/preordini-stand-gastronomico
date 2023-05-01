@@ -1,6 +1,9 @@
 module.exports = {
   siteMetadata: {
+    title: "Sagra",
     siteUrl: `https://preordini-sagra.netlify.app`,
+    description: `Preordine sagra`,
+    author: "kowalski7cc",
   },
   plugins: [
     `gatsby-plugin-image`,
@@ -10,6 +13,8 @@ module.exports = {
         name: `Preordine Sagra`,
         short_name: `Preordine Sagra`,
         start_url: `/`,
+        description: `Preordine sagra`,
+        lang: `it`,
         background_color: `#ffffff`,
         theme_color: `#f8f9fa`,
         display: `standalone`,
