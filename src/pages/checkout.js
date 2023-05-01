@@ -11,10 +11,32 @@ const CheckoutPage = ({ data, location }) => {
     return acc;
   }, {});
 
+  if (!location.state) {
+    navigate("/");
+    return null;
+  }
+
   let receipt = location.state || { righe: [] };
 
   return (
-    <Layout className="mb-5" back={true} title="Riepilogo ordine">
+    <Layout
+      className="mb-5"
+      back={true}
+      title="Riepilogo ordine"
+      bottom={
+        <div className="d-grid gap-2 ">
+          <Button
+            variant="success"
+            className="d-block"
+            disabled={!receipt.righe.length}
+            onClick={() => navigate("/order", { state: receipt })}
+          >
+            <i className="bi bi-cart me-2" />
+            Conferma ordine
+          </Button>
+        </div>
+      }
+    >
       <h2>Ordine per {receipt.cliente || "Anonimo"}</h2>
       <ul className="list-unstyled mb-4">
         <li key={"tavolo"}>
@@ -65,18 +87,6 @@ const CheckoutPage = ({ data, location }) => {
           Non puoi proseguire senza prodotti
         </p>
       )}
-
-      <div className="d-grid gap-2 ">
-        <Button
-          variant="success"
-          className="d-block"
-          disabled={!receipt.righe.length}
-          onClick={() => navigate("/order", { state: receipt })}
-        >
-          <i className="bi bi-cart me-2" />
-          Conferma ordine
-        </Button>
-      </div>
     </Layout>
   );
 };
