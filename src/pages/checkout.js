@@ -11,7 +11,7 @@ const CheckoutPage = ({ data, location }) => {
     return acc;
   }, {});
 
-  if (!location.state) {
+  if (typeof window !== "undefined" && !location.state) {
     navigate("/");
     return null;
   }
@@ -37,7 +37,7 @@ const CheckoutPage = ({ data, location }) => {
         </div>
       }
     >
-      <h2>Ordine per {receipt.cliente || "Anonimo"}</h2>
+      <h2>Ordine {receipt.cliente ? "per " + receipt.cliente : "anonimo"}</h2>
       <ul className="list-unstyled mb-4">
         <li key={"tavolo"}>
           <i className="bi bi-geo-alt me-2" />
@@ -70,13 +70,16 @@ const CheckoutPage = ({ data, location }) => {
             </td>
             <td></td>
             <td>
-              {(
-                receipt.righe.reduce(
-                  (acc, item) => (acc += itemsNames[item.id].price * item.qta),
-                  0
-                ) || 0
-              ).toFixed(2)}
-              €
+              <strong>
+                {(
+                  receipt.righe.reduce(
+                    (acc, item) =>
+                      (acc += itemsNames[item.id].price * item.qta),
+                    0
+                  ) || 0
+                ).toFixed(2)}
+                €
+              </strong>
             </td>
           </tr>
         </thead>

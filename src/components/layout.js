@@ -5,7 +5,7 @@ import Navbar from "react-bootstrap/Navbar";
 import Button from "react-bootstrap/Button";
 import { navigate } from "gatsby";
 
-const Layout = ({ title, children, back, bottom }) => (
+const Layout = ({ title, children, back, bottom, buttons }) => (
   <div className="d-flex flex-column min-vh-100">
     <Navbar className="sticky-top mb-3" bg="light" variant="light">
       <Container>
@@ -21,6 +21,7 @@ const Layout = ({ title, children, back, bottom }) => (
           )}
           {title}
         </Navbar.Brand>
+        <div id="nav-buttons">{buttons}</div>
       </Container>
     </Navbar>
     <Container>

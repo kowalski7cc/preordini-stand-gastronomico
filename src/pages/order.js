@@ -4,10 +4,10 @@ import QRCode from "react-qr-code";
 
 import Layout from "../components/layout";
 import Button from "react-bootstrap/Button";
-import Ratio from "react-bootstrap/Ratio";
+import Seo from "../components/seo";
 
 const OrderPage = ({ location }) => {
-  if (!location.state) {
+  if (typeof window !== "undefined" && !location.state) {
     navigate("/");
     return null;
   }
@@ -24,17 +24,40 @@ const OrderPage = ({ location }) => {
           </Button>
         </div>
       }
+      buttons={
+        <Button
+          onClick={() => {
+            // Fullscreen API is not supported by all browsers
+            if (document.fullscreenEnabled) {
+              // Put qrcode-div in fullscreen
+              document.getElementById("qrcode-div").requestFullscreen();
+            }
+          }}
+          variant="outline-dark"
+        >
+          <i className="bi bi-fullscreen"></i>
+        </Button>
+      }
     >
       <div className="h-100">
-        <h1 className="mb-4">Grazie per aver ordinato!</h1>
-        <div>
-          <QRCode
-            className="mb-2 w-100"
-            value={encodeURIComponent(JSON.stringify(location.state))}
-          />
-          <p className="mb-4 text-center">
-            <small>Mostra il codice QR al bar per pagare il tuo ordine.</small>
-          </p>
+        <div
+          id="qrcode-div"
+          className="d-flex align-items-center justify-content-center h-100 w-100 p-3 bg-body"
+        >
+          <div>
+            {location.state && (
+              <QRCode
+                className="mb-2 w-100"
+                value={encodeURIComponent(JSON.stringify(location.state))}
+              />
+            )}
+            <p className="mb-4 text-center">
+              <small>
+                Mostra il codice QR in cassa per confermare e pagare il tuo
+                ordine
+              </small>
+            </p>
+          </div>
         </div>
       </div>
     </Layout>
@@ -43,4 +66,4 @@ const OrderPage = ({ location }) => {
 
 export default OrderPage;
 
-export const Head = () => <title>Ordine - Sagra</title>;
+export const Head = () => <Seo title={"Ordine"} />;
