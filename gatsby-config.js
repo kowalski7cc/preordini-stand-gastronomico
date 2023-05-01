@@ -7,11 +7,11 @@ module.exports = {
     {
       resolve: `gatsby-plugin-manifest`,
       options: {
-        name: `Preordine - Sagra`,
+        name: `Preordine Sagra`,
         short_name: `Preordine Sagra`,
         start_url: `/`,
         background_color: `#ffffff`,
-        theme_color: `#ffffff`,
+        theme_color: `#f8f9fa`,
         display: `standalone`,
         icon: `src/assets/icon.svg`,
       },

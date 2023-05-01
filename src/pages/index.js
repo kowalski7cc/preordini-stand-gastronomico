@@ -12,45 +12,54 @@ const ItemComponent = ({ item, onChange }) => {
 
   return (
     <Row>
-      <Col xs={8} sm={9}>
+      <Col xs={8} sm={9} lg={7} xl={8} className="d-flex align-items-center">
         <p>
           <strong>{item.descrizione}</strong>
         </p>
       </Col>
-      <Col xs={4} sm={3}>
+      <Col
+        xs={"auto"}
+        sm={2}
+        lg={1}
+        xl={1}
+        className="d-flex align-items-center justify-content-end"
+      >
         <p className="text-end">{item.prezzo.toFixed(2)}€</p>
       </Col>
-      <div className="input-group w-100 btn-group" role="group">
-        <button
-          type="button"
-          className="btn btn-primary"
-          onClick={() => {
-            var c = count - 1 >= 0 ? count - 1 : 0;
-            setCount(c);
-            onChange && onChange({ id: item.sqliteId, amount: c });
-          }}
-        >
-          <i className="bi bi-dash-lg" aria-label="rimuovi" />
-        </button>
-        <Form.Control
-          type="number"
-          disabled={true}
-          readOnly={true}
-          min="0"
-          value={count}
-        />
-        <button
-          type="button"
-          className="btn btn-primary"
-          onClick={() => {
-            var c = count + 1;
-            setCount(c);
-            onChange && onChange({ id: item.sqliteId, amount: c });
-          }}
-        >
-          <i className="bi bi-plus-lg" aria-label="aggiungi" />
-        </button>
-      </div>
+      <Col xs={12} sm={12} md={12} lg={3} xl={2}>
+        <div className="input-group btn-group" role="group">
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={() => {
+              var c = count - 1 >= 0 ? count - 1 : 0;
+              setCount(c);
+              onChange && onChange({ id: item.sqliteId, amount: c });
+            }}
+          >
+            <i className="bi bi-dash-lg" aria-label="rimuovi" />
+          </button>
+          <Form.Control
+            className="text-center"
+            type="number"
+            disabled={true}
+            readOnly={true}
+            min="0"
+            value={count}
+          />
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={() => {
+              var c = count + 1;
+              setCount(c);
+              onChange && onChange({ id: item.sqliteId, amount: c });
+            }}
+          >
+            <i className="bi bi-plus-lg" aria-label="aggiungi" />
+          </button>
+        </div>
+      </Col>
     </Row>
   );
 };
@@ -80,72 +89,87 @@ const IndexPage = ({ data }) => {
   };
 
   return (
-    <Layout className="mb-5" title="Nuovo preordine">
+    <Layout
+      className="mb-5"
+      title="Nuovo preordine"
+      bottom={
+        <div className="d-grid gap-2 bg-light">
+          <Button
+            variant="primary"
+            onClick={() => navigate("/checkout", { state: state })}
+            className="w-100"
+          >
+            Vedi resoconto
+          </Button>
+        </div>
+      }
+    >
       <Form>
-        <Form.Group className="mb-3" controlId="orderName">
-          <Form.Label>Nome</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="Inserisci il tuo nome"
-            onChange={(v) => setState({ ...state, cliente: v.target.value })}
-          />
-        </Form.Group>
+        <Row>
+          <Col lg={4} md={12}>
+            <Form.Group className="mb-3" controlId="orderName">
+              <Form.Label>Nome</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Inserisci il tuo nome"
+                onChange={(v) =>
+                  setState({ ...state, cliente: v.target.value })
+                }
+              />
+            </Form.Group>
+          </Col>
+          <Col lg={4} sm={6}>
+            <Form.Group className="mb-3" controlId="orderTable">
+              <Form.Label>Tavolo</Form.Label>
+              <Form.Control
+                type="number"
+                placeholder="Inserisci il numero del tavolo"
+                min="0"
+                required
+                onChange={(v) =>
+                  setState({ ...state, numeroTavolo: v.target.value })
+                }
+              />
+            </Form.Group>
+          </Col>
+          <Col lg={4} sm={6}>
+            <Form.Group className="mb-3" controlId="orderPeople">
+              <Form.Label>Coperti</Form.Label>
+              <Form.Control
+                type="number"
+                onChange={(v) =>
+                  setState({ ...state, coperti: v.target.value })
+                }
+                required
+                min="1"
+                defaultValue="1"
+                placeholder="Coperti"
+              />
+            </Form.Group>
+          </Col>
+        </Row>
 
-        <Form.Group className="mb-3" controlId="orderTable">
-          <Form.Label>Numero del tavolo</Form.Label>
-          <Form.Control
-            type="number"
-            placeholder="Inserisci il numero del tavolo"
-            min="0"
-            required
-            onChange={(v) =>
-              setState({ ...state, numeroTavolo: v.target.value })
-            }
-          />
-        </Form.Group>
-        <Form.Group className="mb-3" controlId="orderPeople">
-          <Form.Label>Numero di persone</Form.Label>
-          <Form.Control
-            type="number"
-            onChange={(v) => setState({ ...state, coperti: v.target.value })}
-            required
-            min="1"
-            defaultValue="1"
-            placeholder="Inserisci il numero di persone"
-          />
-        </Form.Group>
+        <Accordion className="mb-4  " defaultActiveKey="0">
+          {data.categorie.nodes.map((categoria, index) => (
+            <Accordion.Item eventKey={index} key={index}>
+              <Accordion.Header>{categoria.descrizione}</Accordion.Header>
+              <Accordion.Body className="d-grid gap-4">
+                {categoria.items.length > 0
+                  ? categoria.items.map((item, index) => (
+                      <ItemComponent
+                        key={index}
+                        item={item}
+                        onChange={({ id, amount }) =>
+                          updateRow({ id: id, qta: amount })
+                        }
+                      />
+                    ))
+                  : "Nessun articolo disponibile in questa categoria"}
+              </Accordion.Body>
+            </Accordion.Item>
+          ))}
+        </Accordion>
       </Form>
-
-      <Accordion className="mb-4  " defaultActiveKey="0">
-        {data.categorie.nodes.map((categoria, index) => (
-          <Accordion.Item eventKey={index} key={index}>
-            <Accordion.Header>{categoria.descrizione}</Accordion.Header>
-            <Accordion.Body>
-              {categoria.items.length > 0
-                ? categoria.items.map((item, index) => (
-                    <ItemComponent
-                      key={index}
-                      item={item}
-                      onChange={({ id, amount }) =>
-                        updateRow({ id: id, qta: amount })
-                      }
-                    />
-                  ))
-                : "Nessun articolo disponibile in questa categoria"}
-            </Accordion.Body>
-          </Accordion.Item>
-        ))}
-      </Accordion>
-
-      <div className="d-grid gap-2 mb-3">
-        <Button
-          variant="primary"
-          onClick={() => navigate("/checkout", { state: state })}
-          className="w-100"
-        >
-          Vedi resoconto
-        </Button>
-      </div>
     </Layout>
   );
 };
