@@ -4,6 +4,10 @@ module.exports = {
     siteUrl: `https://preordini-sagra.netlify.app`,
     description: `Preordine sagra`,
     author: "kowalski7cc",
+    lang: "it",
+    features: {
+      coperti_enabled: true,
+    },
   },
   plugins: [
     `gatsby-plugin-image`,
@@ -16,9 +20,15 @@ module.exports = {
         description: `Preordine sagra`,
         lang: `it`,
         background_color: `#ffffff`,
-        theme_color: `#f8f9fa`,
+        theme_color: `#870000`,
         display: `standalone`,
         icon: `src/assets/icon.svg`,
+      },
+    },
+    {
+      resolve: `gatsby-plugin-canonical-urls`,
+      options: {
+        siteUrl: `https://preordini-sagra.netlify.app`,
       },
     },
     {

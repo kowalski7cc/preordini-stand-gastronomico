@@ -6,6 +6,7 @@ import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Accordion from "react-bootstrap/Accordion";
 import { Col, Row } from "react-bootstrap";
+import Seo from "../components/seo";
 
 const ItemComponent = ({ item, onChange }) => {
   const [count, setCount] = React.useState(0);
@@ -41,7 +42,7 @@ const ItemComponent = ({ item, onChange }) => {
           </button>
           <Form.Control
             className="text-center"
-            type="number"
+            type="text"
             disabled={true}
             readOnly={true}
             min="0"
@@ -72,6 +73,8 @@ const IndexPage = ({ data }) => {
     righe: [],
   });
 
+  const coperti_enabled = data.site.siteMetadata.features.coperti_enabled;
+
   const updateRow = (row) => {
     const index = state.righe.findIndex((r) => r.id === row.id);
     if (index >= 0) {
@@ -93,7 +96,7 @@ const IndexPage = ({ data }) => {
       className="mb-5"
       title="Nuovo preordine"
       bottom={
-        <div className="d-grid gap-2 bg-light">
+        <div className="d-grid gap-2">
           <Button
             variant="primary"
             onClick={() => navigate("/checkout", { state: state })}
@@ -106,7 +109,7 @@ const IndexPage = ({ data }) => {
     >
       <Form>
         <Row>
-          <Col lg={4} md={12}>
+          <Col lg={coperti_enabled ? 4 : 8} md={12}>
             <Form.Group className="mb-3" controlId="orderName">
               <Form.Label>Nome</Form.Label>
               <Form.Control
@@ -118,7 +121,7 @@ const IndexPage = ({ data }) => {
               />
             </Form.Group>
           </Col>
-          <Col lg={4} sm={6}>
+          <Col className={!coperti_enabled && "d-none"} lg={4} sm={6}>
             <Form.Group className="mb-3" controlId="orderTable">
               <Form.Label>Tavolo</Form.Label>
               <Form.Control
@@ -132,7 +135,7 @@ const IndexPage = ({ data }) => {
               />
             </Form.Group>
           </Col>
-          <Col lg={4} sm={6}>
+          <Col lg={4} sm={coperti_enabled ? 6 : 12}>
             <Form.Group className="mb-3" controlId="orderPeople">
               <Form.Label>Coperti</Form.Label>
               <Form.Control
@@ -149,7 +152,7 @@ const IndexPage = ({ data }) => {
           </Col>
         </Row>
 
-        <Accordion className="mb-4  " defaultActiveKey="0">
+        <Accordion className="mb-4" defaultActiveKey="0">
           {data.categorie.nodes.map((categoria, index) => (
             <Accordion.Item eventKey={index} key={index}>
               <Accordion.Header>{categoria.descrizione}</Accordion.Header>
@@ -187,8 +190,15 @@ export const query = graphql`
         }
       }
     }
+    site {
+      siteMetadata {
+        features {
+          coperti_enabled
+        }
+      }
+    }
   }
 `;
 
 export default IndexPage;
-export const Head = () => <title>Nuovo preordine - Sagra</title>;
+export const Head = () => <Seo title="Nuovo preordine" />;

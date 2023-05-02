@@ -7,25 +7,26 @@ import { navigate } from "gatsby";
 
 const Layout = ({ title, children, back, bottom, buttons }) => (
   <div className="d-flex flex-column min-vh-100">
-    <Navbar className="sticky-top mb-3" bg="light" variant="light">
-      <Container>
-        <Navbar.Brand>
-          {back && (
-            <Button
-              variant="outline-dark"
-              className="me-3"
-              onClick={() => navigate(-1)}
-            >
-              <i className="bi bi-arrow-left" />
-            </Button>
-          )}
+    <Navbar className="sticky-top mb-3" bg="accent">
+      <Container className="flex-row justify-content-start">
+        {back && (
+          <Button
+            variant="accent"
+            className="me-3"
+            size="sm"
+            onClick={() => navigate(-1)}
+          >
+            <i className="fs-5 bi bi-arrow-left" />
+          </Button>
+        )}
+        <Navbar.Brand className="text-white text-truncate flex-grow-1">
           {title}
         </Navbar.Brand>
         <div id="nav-buttons">{buttons}</div>
       </Container>
     </Navbar>
-    <Container>
-      <main>{children}</main>
+    <Container className="flex-fill h-100 d-flex flex-column">
+      {children}
     </Container>
     <footer className="bg-body mt-auto sticky-bottom">
       <Container className="mt-3 mb-3">{bottom}</Container>

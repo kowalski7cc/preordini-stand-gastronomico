@@ -4,6 +4,7 @@ import { graphql, navigate } from "gatsby";
 import Layout from "../components/layout";
 import Button from "react-bootstrap/Button";
 import Table from "react-bootstrap/Table";
+import Seo from "../components/seo";
 
 const CheckoutPage = ({ data, location }) => {
   const itemsNames = data.allSqliteItems.nodes.reduce((acc, item) => {
@@ -17,6 +18,7 @@ const CheckoutPage = ({ data, location }) => {
   }
 
   let receipt = location.state || { righe: [] };
+  const coperti_enabled = data.site.siteMetadata.features.coperti_enabled;
 
   return (
     <Layout
@@ -39,52 +41,57 @@ const CheckoutPage = ({ data, location }) => {
     >
       <h2>Ordine {receipt.cliente ? "per " + receipt.cliente : "anonimo"}</h2>
       <ul className="list-unstyled mb-4">
-        <li key={"tavolo"}>
-          <i className="bi bi-geo-alt me-2" />
-          {receipt.numeroTavolo
-            ? "Tavolo " + receipt.numeroTavolo
-            : "Da asporto"}
-        </li>
+        {coperti_enabled && (
+          <li key={"tavolo"}>
+            <i className="bi bi-geo-alt me-2" />
+            {receipt.numeroTavolo
+              ? "Tavolo " + receipt.numeroTavolo
+              : "Da asporto"}
+          </li>
+        )}
         <li key="coperti">
           <i className="bi bi-people me-2" />
           {receipt.coperti || 0}
         </li>
       </ul>
-      <Table className="mb-5">
-        <thead>
-          <tr>
-            <th>Prodotto</th>
-            <th className="text-end">Quantità</th>
-            <th>Prezzo</th>
-          </tr>
-          {receipt.righe.map((item, index) => (
-            <tr key={index}>
-              <td>{itemsNames[item.id].description}</td>
-              <td className="text-end">{item.qta}</td>
-              <td>{(itemsNames[item.id].price || 0).toFixed(2)}€</td>
+      <div className="table-responsive">
+        <Table className="mb-5">
+          <thead>
+            <tr>
+              <th className="text-truncate">Prodotto</th>
+              <th className="text-end text-truncate">Quantità</th>
+              <th className="text-truncate">Prezzo</th>
             </tr>
-          ))}
-          <tr>
-            <td>
-              <strong>Totale</strong>
-            </td>
-            <td></td>
-            <td>
-              <strong>
-                {(
-                  receipt.righe.reduce(
-                    (acc, item) =>
-                      (acc += itemsNames[item.id].price * item.qta),
-                    0
-                  ) || 0
-                ).toFixed(2)}
-                €
-              </strong>
-            </td>
-          </tr>
-        </thead>
-      </Table>
-
+            {receipt.righe.map((item, index) => (
+              <tr key={index}>
+                <td className="text-break">
+                  {itemsNames[item.id].description}
+                </td>
+                <td className="text-end">{item.qta}</td>
+                <td>{(itemsNames[item.id].price || 0).toFixed(2)}€</td>
+              </tr>
+            ))}
+            <tr>
+              <td>
+                <strong>Totale</strong>
+              </td>
+              <td></td>
+              <td>
+                <strong>
+                  {(
+                    receipt.righe.reduce(
+                      (acc, item) =>
+                        (acc += itemsNames[item.id].price * item.qta),
+                      0
+                    ) || 0
+                  ).toFixed(2)}
+                  €
+                </strong>
+              </td>
+            </tr>
+          </thead>
+        </Table>
+      </div>
       {!receipt.righe.length && (
         <p className="text-center text-danger">
           Non puoi proseguire senza prodotti
@@ -103,8 +110,15 @@ export const query = graphql`
         price: prezzo
       }
     }
+    site {
+      siteMetadata {
+        features {
+          coperti_enabled
+        }
+      }
+    }
   }
 `;
 
 export default CheckoutPage;
-export const Head = () => <title>Riepilogo ordine - Sagra</title>;
+export const Head = () => <Seo title="Riepilogo ordine" />;
