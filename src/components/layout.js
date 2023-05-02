@@ -25,7 +25,7 @@ const Layout = ({ title, children, back, bottom, buttons }) => (
         <div id="nav-buttons">{buttons}</div>
       </Container>
     </Navbar>
-    <Container className="flex-fill h-100 d-flex flex-column">
+    <Container className="h-100 mb-auto">
       {children}
     </Container>
     <footer className="bg-body mt-auto sticky-bottom">
