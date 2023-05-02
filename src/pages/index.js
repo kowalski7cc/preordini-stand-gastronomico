@@ -91,6 +91,40 @@ const IndexPage = ({ data }) => {
     }
   };
 
+  // check for indexedDB support and open a new database
+  const [db, setDb] = React.useState(null);
+  React.useEffect(() => {
+    if (typeof window !== "undefined" && !db) {
+      const request = window.indexedDB.open("data", 1);
+      request.onerror = function (event) {
+        console.log("Database error: " + event.target.errorCode);
+      };
+      request.onsuccess = function (event) {
+        setDb(event.target.result);
+      };
+      request.onupgradeneeded = function (event) {
+        const db = event.target.result;
+        const objectStore = db.createObjectStore("configs", {
+          keyPath: "key",
+        });
+      };
+    }
+  }, [db]);
+
+  React.useEffect(() => {
+    if (db) {
+      const transaction = db.transaction(["configs"], "readwrite");
+      const objectStore = transaction.objectStore("configs");
+      const request = objectStore.get("name");
+      request.onsuccess = function (event) {
+        if (request.result) {
+          setState({ ...state, cliente: request.result.value });
+        }
+      };
+    }
+  }, [db]);
+
+
   return (
     <Layout
       className="mb-5"
@@ -99,12 +133,27 @@ const IndexPage = ({ data }) => {
         <div className="d-grid gap-2">
           <Button
             variant="primary"
-            onClick={() => navigate("/checkout", { state: state })}
+            onClick={() => {
+              // save Name to indexedDB
+              if (db) {
+                const transaction = db.transaction(["configs"], "readwrite");
+                const objectStore = transaction.objectStore("configs");
+                const request = objectStore.put({ key: "name", value: state.cliente });
+                request.onsuccess = function (event) {
+                  console.log("Name saved to indexedDB");
+                }
+                request.onerror = function (event) {
+                  console.log("Error saving name to indexedDB");
+                }
+
+              }
+              navigate("/checkout", { state: state })
+            }}
             className="w-100"
           >
             Vedi resoconto
           </Button>
-        </div>
+        </div >
       }
     >
       <Form>
@@ -118,6 +167,7 @@ const IndexPage = ({ data }) => {
                 onChange={(v) =>
                   setState({ ...state, cliente: v.target.value })
                 }
+                value={state.cliente || ""}
               />
             </Form.Group>
           </Col>
@@ -159,21 +209,21 @@ const IndexPage = ({ data }) => {
               <Accordion.Body className="d-grid gap-4">
                 {categoria.items.length > 0
                   ? categoria.items.map((item, index) => (
-                      <ItemComponent
-                        key={index}
-                        item={item}
-                        onChange={({ id, amount }) =>
-                          updateRow({ id: id, qta: amount })
-                        }
-                      />
-                    ))
+                    <ItemComponent
+                      key={index}
+                      item={item}
+                      onChange={({ id, amount }) =>
+                        updateRow({ id: id, qta: amount })
+                      }
+                    />
+                  ))
                   : "Nessun articolo disponibile in questa categoria"}
               </Accordion.Body>
             </Accordion.Item>
           ))}
         </Accordion>
       </Form>
-    </Layout>
+    </Layout >
   );
 };
 

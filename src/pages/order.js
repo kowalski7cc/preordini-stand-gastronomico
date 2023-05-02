@@ -12,6 +12,7 @@ const OrderPage = ({ location }) => {
     return null;
   }
 
+
   return (
     <Layout
       className="mb-5 align-items-center"
@@ -39,7 +40,7 @@ const OrderPage = ({ location }) => {
         </Button>
       }
     >
-      <div className="h-100 flex-fill align-items-center d-flex">
+      <div className="h-100 my-auto align-items-center d-flex">
         <div className="d-flex align-items-center justify-content-center h-100 w-100 py-2 px-1">
           <div className="text-center">
             <p className="mb-4 mx-3">
