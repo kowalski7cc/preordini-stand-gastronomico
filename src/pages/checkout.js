@@ -12,6 +12,19 @@ const CheckoutPage = ({ data, location }) => {
     return acc;
   }, {});
 
+  const [db, setDb] = React.useState(null);
+  React.useEffect(() => {
+    if (typeof window !== "undefined" && !db) {
+      const request = window.indexedDB.open("data", 1);
+      request.onerror = function (event) {
+        console.log("Database error: " + event.target.errorCode);
+      };
+      request.onsuccess = function (event) {
+        setDb(event.target.result);
+      };
+    }
+  }, [db]);
+
   if (typeof window !== "undefined" && !location.state) {
     navigate("/");
     return null;
@@ -31,7 +44,20 @@ const CheckoutPage = ({ data, location }) => {
             variant="success"
             className="d-block"
             disabled={!receipt.righe.length}
-            onClick={() => navigate("/order", { state: receipt })}
+            onClick={() => {
+              if (db) {
+                const transaction = db.transaction(["orders"], "readwrite");
+                const objectStore = transaction.objectStore("orders");
+                const request = objectStore.add({
+                  ...receipt,
+                  orderdate: new Date(),
+                });
+                request.onsuccess = function (event) {
+                  console.log("Order added to db");
+                };
+              }
+              navigate("/order", { state: receipt });
+            }}
           >
             <i className="bi bi-cart me-2" />
             Conferma ordine
@@ -55,11 +81,11 @@ const CheckoutPage = ({ data, location }) => {
         </li>
       </ul>
       <div className="table-responsive">
-        <Table className="mb-5">
+        <Table className="mb-5" striped hover>
           <thead>
             <tr>
               <th className="text-truncate">Prodotto</th>
-              <th className="text-end text-truncate">Quantità</th>
+              <th className="text-end text-truncate">Q.tà</th>
               <th className="text-truncate">Prezzo</th>
             </tr>
             {receipt.righe.map((item, index) => (

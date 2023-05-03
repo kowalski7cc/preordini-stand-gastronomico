@@ -104,8 +104,12 @@ const IndexPage = ({ data }) => {
       };
       request.onupgradeneeded = function (event) {
         const db = event.target.result;
-        const objectStore = db.createObjectStore("configs", {
+        const configStore = db.createObjectStore("configs", {
           keyPath: "key",
+        });
+        const ordersStore = db.createObjectStore("orders", {
+          keyPath: "id",
+          autoIncrement: true,
         });
       };
     }
@@ -129,6 +133,9 @@ const IndexPage = ({ data }) => {
     <Layout
       className="mb-5"
       title="Nuovo preordine"
+      buttons={
+        <Button variant="accent" onClick={() => navigate("/history")}><i className="bi bi-clock-history" /></Button>
+      }
       bottom={
         <div className="d-grid gap-2">
           <Button

@@ -2,5 +2,5 @@
 - [x] Salvare il nome in indexedDB
 - [ ] Fix dark mode
 - [ ] Toggle posti e tavolo
-- [ ] Cronologia ordini
+- [x] Cronologia ordini
 - [ ] Usare React context per l'ordine

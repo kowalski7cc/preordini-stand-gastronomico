@@ -12,7 +12,7 @@ const Layout = ({ title, children, back, bottom, buttons }) => (
         {back && (
           <Button
             variant="accent"
-            className="me-3"
+            className="me-2"
             size="sm"
             onClick={() => navigate(-1)}
           >
@@ -25,9 +25,7 @@ const Layout = ({ title, children, back, bottom, buttons }) => (
         <div id="nav-buttons">{buttons}</div>
       </Container>
     </Navbar>
-    <Container className="h-100 mb-auto">
-      {children}
-    </Container>
+    <Container className="h-100 mb-auto">{children}</Container>
     <footer className="bg-body mt-auto sticky-bottom">
       <Container className="mt-3 mb-3">{bottom}</Container>
     </footer>
