@@ -40,6 +40,8 @@ function Seo({ description, title, children }) {
     <>
       <html data-bs-theme={theme} lang={site.siteMetadata?.lang} />
       <title>{defaultTitle ? `${title} | ${defaultTitle}` : title}</title>
+      <meta name="application-name" content={defaultTitle} />
+      <meta name="author" content={site.siteMetadata?.author} />
       <meta name="description" content={metaDescription} />
       <meta property="og:title" content={title} />
       <meta property="og:description" content={metaDescription} />
