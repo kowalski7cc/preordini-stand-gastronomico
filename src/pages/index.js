@@ -5,18 +5,23 @@ import Layout from "../components/layout";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Accordion from "react-bootstrap/Accordion";
-import { Col, Row } from "react-bootstrap";
+import Col from "react-bootstrap/Col";
+import Row from "react-bootstrap/Row";
 import Seo from "../components/seo";
 
 const ItemComponent = ({ item, onChange }) => {
   const [count, setCount] = React.useState(0);
 
   return (
-    <Row>
-      <Col xs={8} sm={9} lg={7} xl={8} className="d-flex align-items-center">
-        <p>
-          <strong>{item.descrizione}</strong>
-        </p>
+    <Row className="gap-3">
+      <Col
+        xs={8}
+        sm={9}
+        lg={7}
+        xl={8}
+        className="d-flex align-middle align-items-center"
+      >
+        <strong>{item.descrizione}</strong>
       </Col>
       <Col
         xs={"auto"}
@@ -25,13 +30,15 @@ const ItemComponent = ({ item, onChange }) => {
         xl={1}
         className="d-flex align-items-center justify-content-end"
       >
-        <p className="text-end">{item.prezzo.toFixed(2)}€</p>
+        {`${item.prezzo.toFixed(2)}€`}
       </Col>
       <Col xs={12} sm={12} md={12} lg={3} xl={2}>
         <div className="input-group btn-group" role="group">
-          <button
+          <Button
             type="button"
-            className="btn btn-primary"
+            variant="primary"
+            size="sm"
+            className="fs-5"
             onClick={() => {
               var c = count - 1 >= 0 ? count - 1 : 0;
               setCount(c);
@@ -39,7 +46,7 @@ const ItemComponent = ({ item, onChange }) => {
             }}
           >
             <i className="bi bi-dash-lg" aria-label="rimuovi" />
-          </button>
+          </Button>
           <Form.Control
             className="text-center"
             type="text"
@@ -48,32 +55,40 @@ const ItemComponent = ({ item, onChange }) => {
             min="0"
             value={count}
           />
-          <button
+          <Button
             type="button"
-            className="btn btn-primary"
+            className="fs-5"
+            size="sm"
+            variant="primary"
             onClick={() => {
               var c = count + 1;
               setCount(c);
               onChange && onChange({ id: item.sqliteId, amount: c });
             }}
           >
-            <i className="bi bi-plus-lg" aria-label="aggiungi" />
-          </button>
+            <i className="bi bi-plus-lg fs-5" aria-label="aggiungi" />
+          </Button>
         </div>
       </Col>
     </Row>
   );
 };
 
-const IndexPage = ({ data }) => {
+const IndexPage = ({ data, location }) => {
   const [state, setState] = React.useState({
-    cliente: null,
+    cliente:
+      (typeof localStorage !== "undefined" &&
+        localStorage.getItem("cliente")) ||
+      "",
     numeroTavolo: null,
     coperti: 1,
-    righe: [],
+    righe: location.status?.righe || [],
   });
 
-  const coperti_enabled = data.site.siteMetadata.features.coperti_enabled;
+  console.log("state", state);
+
+  const feature_coperti_enabled =
+    data.site.siteMetadata.features.coperti_enabled;
 
   const updateRow = (row) => {
     const index = state.righe.findIndex((r) => r.id === row.id);
@@ -91,81 +106,39 @@ const IndexPage = ({ data }) => {
     }
   };
 
-  // check for indexedDB support and open a new database
-  const [db, setDb] = React.useState(null);
-  React.useEffect(() => {
-    if (typeof window !== "undefined" && !db) {
-      const request = window.indexedDB.open("data", 1);
-      request.onerror = function (event) {
-        console.log("Database error: " + event.target.errorCode);
-      };
-      request.onsuccess = function (event) {
-        setDb(event.target.result);
-      };
-      request.onupgradeneeded = function (event) {
-        const db = event.target.result;
-        const configStore = db.createObjectStore("configs", {
-          keyPath: "key",
-        });
-        const ordersStore = db.createObjectStore("orders", {
-          keyPath: "id",
-          autoIncrement: true,
-        });
-      };
-    }
-  }, [db]);
-
-  React.useEffect(() => {
-    if (db) {
-      const transaction = db.transaction(["configs"], "readwrite");
-      const objectStore = transaction.objectStore("configs");
-      const request = objectStore.get("name");
-      request.onsuccess = function (event) {
-        if (request.result) {
-          setState({ ...state, cliente: request.result.value });
-        }
-      };
-    }
-  }, [db]);
-
-
   return (
     <Layout
       className="mb-5"
       title="Nuovo preordine"
       buttons={
-        <Button variant="accent" onClick={() => navigate("/history")}><i className="bi bi-clock-history" /></Button>
+        <Button
+          variant="accent"
+          aria-label="Cronologia ordini"
+          onClick={() => navigate("/history")}
+        >
+          <i className="bi bi-clock-history" />
+        </Button>
       }
       bottom={
         <div className="d-grid gap-2">
           <Button
             variant="primary"
             onClick={() => {
-              // save Name to indexedDB
-              if (db) {
-                const transaction = db.transaction(["configs"], "readwrite");
-                const objectStore = transaction.objectStore("configs");
-                const request = objectStore.put({ key: "name", value: state.cliente });
-                request.onsuccess = function (event) {
-                  console.log("Name saved to indexedDB");
-                }
-                request.onerror = function (event) {
-                  console.log("Error saving name to indexedDB");
-                }
-
+              if (localStorage) {
+                localStorage.setItem("cliente", state.cliente);
               }
-              navigate("/checkout", { state: state })
+              navigate("/checkout", { state: state });
             }}
             className="w-100"
           >
             Vedi resoconto
           </Button>
-        </div >
+        </div>
       }
     >
       <Form>
         <Row>
-          <Col lg={coperti_enabled ? 4 : 8} md={12}>
+          <Col lg={feature_coperti_enabled ? 4 : 12} md={12}>
             <Form.Group className="mb-3" controlId="orderName">
               <Form.Label>Nome</Form.Label>
               <Form.Control
@@ -178,7 +151,7 @@ const IndexPage = ({ data }) => {
               />
             </Form.Group>
           </Col>
-          <Col className={!coperti_enabled && "d-none"} lg={4} sm={6}>
+          <Col className={!feature_coperti_enabled && "d-none"} lg={4} sm={6}>
             <Form.Group className="mb-3" controlId="orderTable">
               <Form.Label>Tavolo</Form.Label>
               <Form.Control
@@ -192,7 +165,11 @@ const IndexPage = ({ data }) => {
               />
             </Form.Group>
           </Col>
-          <Col lg={4} sm={coperti_enabled ? 6 : 12}>
+          <Col
+            className={!feature_coperti_enabled && "d-none"}
+            lg={4}
+            sm={feature_coperti_enabled ? 6 : 12}
+          >
             <Form.Group className="mb-3" controlId="orderPeople">
               <Form.Label>Coperti</Form.Label>
               <Form.Control
@@ -216,21 +193,21 @@ const IndexPage = ({ data }) => {
               <Accordion.Body className="d-grid gap-4">
                 {categoria.items.length > 0
                   ? categoria.items.map((item, index) => (
-                    <ItemComponent
-                      key={index}
-                      item={item}
-                      onChange={({ id, amount }) =>
-                        updateRow({ id: id, qta: amount })
-                      }
-                    />
-                  ))
+                      <ItemComponent
+                        key={index}
+                        item={item}
+                        onChange={({ id, amount }) =>
+                          updateRow({ id: id, qta: amount })
+                        }
+                      />
+                    ))
                   : "Nessun articolo disponibile in questa categoria"}
               </Accordion.Body>
             </Accordion.Item>
           ))}
         </Accordion>
       </Form>
-    </Layout >
+    </Layout>
   );
 };
 

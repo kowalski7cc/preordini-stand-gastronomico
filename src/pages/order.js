@@ -12,7 +12,6 @@ const OrderPage = ({ location }) => {
     return null;
   }
 
-
   return (
     <Layout
       className="mb-5 align-items-center"
@@ -27,6 +26,7 @@ const OrderPage = ({ location }) => {
       }
       buttons={
         <Button
+          aria-label="Schermo intero"
           onClick={() => {
             // Fullscreen API is not supported by all browsers
             if (document.fullscreenEnabled) {
@@ -36,7 +36,7 @@ const OrderPage = ({ location }) => {
           }}
           variant="accent"
         >
-          <i className="bi bi-fullscreen"></i>
+          <i aria-hidden="true" className="bi bi-fullscreen"></i>
         </Button>
       }
     >

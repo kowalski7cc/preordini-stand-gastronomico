@@ -6,32 +6,35 @@ import Button from "react-bootstrap/Button";
 import Table from "react-bootstrap/Table";
 import Seo from "../components/seo";
 
+import OrderDatabaseManager from "../utils/dbmanager";
+
 const CheckoutPage = ({ data, location }) => {
   const itemsNames = data.allSqliteItems.nodes.reduce((acc, item) => {
     acc[item.id] = { description: item.description, price: item.price };
     return acc;
   }, {});
 
+  React.useEffect(() => {
+    if (typeof window !== "undefined" && !location.state) {
+      navigate("/");
+    }
+  }, [location.state]);
+
   const [db, setDb] = React.useState(null);
   React.useEffect(() => {
-    if (typeof window !== "undefined" && !db) {
-      const request = window.indexedDB.open("data", 1);
-      request.onerror = function (event) {
-        console.log("Database error: " + event.target.errorCode);
-      };
-      request.onsuccess = function (event) {
-        setDb(event.target.result);
-      };
+    if (!db) {
+      const ordersDB = new OrderDatabaseManager();
+      ordersDB.open().then((db) => {
+        setDb(db);
+      });
     }
   }, [db]);
 
-  if (typeof window !== "undefined" && !location.state) {
-    navigate("/");
-    return null;
-  }
+  const receipt = React.useRef(location.state || { righe: [] });
 
-  let receipt = location.state || { righe: [] };
-  const coperti_enabled = data.site.siteMetadata.features.coperti_enabled;
+  const coperti_enabled = React.useRef(
+    data.site.siteMetadata.features.coperti_enabled || false
+  );
 
   return (
     <Layout
@@ -43,42 +46,44 @@ const CheckoutPage = ({ data, location }) => {
           <Button
             variant="success"
             className="d-block"
-            disabled={!receipt.righe.length}
+            disabled={!receipt.current.righe.length}
             onClick={() => {
               if (db) {
-                const transaction = db.transaction(["orders"], "readwrite");
-                const objectStore = transaction.objectStore("orders");
-                const request = objectStore.add({
-                  ...receipt,
-                  orderdate: new Date(),
+                db.addOrder({
+                  ...receipt.current,
+                  orderDate: new Date(),
+                }).then((id) => {
+                  console.log("Order added: ", id);
                 });
-                request.onsuccess = function (event) {
-                  console.log("Order added to db");
-                };
               }
-              navigate("/order", { state: receipt });
+              navigate("/order", { state: receipt.current });
             }}
           >
-            <i className="bi bi-cart me-2" />
+            <i aria-hidden="true" className="bi bi-cart me-2" />
             Conferma ordine
           </Button>
         </div>
       }
     >
-      <h2>Ordine {receipt.cliente ? "per " + receipt.cliente : "anonimo"}</h2>
+      <h2>
+        Ordine{" "}
+        {receipt.current.cliente ? "per " + receipt.current.cliente : "anonimo"}
+      </h2>
       <ul className="list-unstyled mb-4">
-        {coperti_enabled && (
+        {coperti_enabled.current && (
           <li key={"tavolo"}>
             <i className="bi bi-geo-alt me-2" />
-            {receipt.numeroTavolo
+            {receipt.current.numeroTavolo
               ? "Tavolo " + receipt.numeroTavolo
               : "Da asporto"}
           </li>
         )}
-        <li key="coperti">
-          <i className="bi bi-people me-2" />
-          {receipt.coperti || 0}
-        </li>
+        {coperti_enabled.current && (
+          <li key="coperti">
+            <i className="bi bi-people me-2" />
+            {receipt.current.coperti || 0}
+          </li>
+        )}
       </ul>
       <div className="table-responsive">
         <Table className="mb-5" striped hover>
@@ -88,7 +93,7 @@ const CheckoutPage = ({ data, location }) => {
               <th className="text-end text-truncate">Q.tà</th>
               <th className="text-truncate">Prezzo</th>
             </tr>
-            {receipt.righe.map((item, index) => (
+            {receipt.current.righe.map((item, index) => (
               <tr key={index}>
                 <td className="text-break">
                   {itemsNames[item.id].description}
@@ -105,7 +110,7 @@ const CheckoutPage = ({ data, location }) => {
               <td>
                 <strong>
                   {(
-                    receipt.righe.reduce(
+                    receipt.current.righe.reduce(
                       (acc, item) =>
                         (acc += itemsNames[item.id].price * item.qta),
                       0
@@ -118,7 +123,7 @@ const CheckoutPage = ({ data, location }) => {
           </thead>
         </Table>
       </div>
-      {!receipt.righe.length && (
+      {!receipt.current.righe.length && (
         <p className="text-center text-danger">
           Non puoi proseguire senza prodotti
         </p>
