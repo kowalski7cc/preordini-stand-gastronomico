@@ -5,6 +5,7 @@ import Layout from "../components/layout";
 import Button from "react-bootstrap/Button";
 import Table from "react-bootstrap/Table";
 import Seo from "../components/seo";
+import DbManager from "../utils/dbmanager";
 
 const HistoryPage = ({ data }) => {
   const itemsNames = data.allSqliteItems.nodes.reduce((acc, item) => {
@@ -15,30 +16,21 @@ const HistoryPage = ({ data }) => {
   const [loaded, setLoaded] = React.useState(false);
   const [orders, setOrders] = React.useState([]);
   const [db, setDb] = React.useState(null);
-
   React.useEffect(() => {
-    if (typeof window !== "undefined" && !db) {
-      const request = window.indexedDB.open("data", 1);
-      request.onerror = function (event) {
-        console.log("Database error: " + event.target.errorCode);
-      };
-      request.onsuccess = function (event) {
-        setDb(event.target.result);
-      };
+    if (!db) {
+      const ordersDB = new DbManager();
+      ordersDB.open().then((db) => {
+        setDb(db);
+      });
     }
   }, [db]);
 
   React.useEffect(() => {
     if (db) {
-      const transaction = db.transaction(["orders"], "readonly");
-      const objectStore = transaction.objectStore("orders");
-      const request = objectStore.getAll();
-      request.onsuccess = function (event) {
-        // sort by id desc
-        event.target.result.sort((a, b) => b.id - a.id);
-        setOrders(event.target.result);
+      db.getOrders().then((orders) => {
+        setOrders(orders);
         setLoaded(true);
-      };
+      });
     }
   }, [db]);
 
@@ -59,13 +51,10 @@ const HistoryPage = ({ data }) => {
             document.getElementById("btn-clear-history").blur();
             if (!confirm) return;
             if (db) {
-              const transaction = db.transaction(["orders"], "readwrite");
-              const objectStore = transaction.objectStore("orders");
-              const request = objectStore.clear();
-              request.onsuccess = function (event) {
+              db.deleteAllOrders().then(() => {
                 console.log("Orders cleared");
                 setOrders([]);
-              };
+              });
             }
           }}
         >
@@ -77,7 +66,7 @@ const HistoryPage = ({ data }) => {
         orders.map((order, index) => (
           <div className="mb-5" key={index}>
             <div className="d-flex align-middle align-items-center">
-              <h3 className="flex-fill">Ordine {order.id}</h3>
+              <h3 className="flex-fill">Ordine</h3>
               <Button
                 onClick={() => {
                   navigate("/order", { state: order });
@@ -86,7 +75,7 @@ const HistoryPage = ({ data }) => {
                 <i className="bi bi-qr-code" />
               </Button>
             </div>
-            <small>Del {order.orderdate.toLocaleString()}</small>
+            <small>Del {order.orderDate.toLocaleString()}</small>
             <div className="table-responsive">
               <Table striped hover>
                 <thead>
