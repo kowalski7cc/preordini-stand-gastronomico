@@ -2,22 +2,6 @@ import * as React from "react";
 import { useStaticQuery, graphql } from "gatsby";
 
 function Seo({ description, title, children }) {
-  const [theme, setTheme] = React.useState(
-    typeof window !== "undefined" &&
-      window.matchMedia("(prefers-color-scheme: dark)").matches
-      ? "dark"
-      : "light"
-  );
-
-  if (typeof window !== "undefined") {
-    window
-      .matchMedia("(prefers-color-scheme: dark)")
-      .addEventListener("change", (event) => {
-        const newColorScheme = event.matches ? "dark" : "light";
-        setTheme(newColorScheme);
-      });
-  }
-
   const { site } = useStaticQuery(
     graphql`
       query {
@@ -38,7 +22,7 @@ function Seo({ description, title, children }) {
 
   return (
     <>
-      <html data-bs-theme={theme} lang={site.siteMetadata?.lang} />
+      <html lang={site.siteMetadata?.lang} />
       <title>{defaultTitle ? `${title} | ${defaultTitle}` : title}</title>
       <meta name="application-name" content={defaultTitle} />
       <meta name="author" content={site.siteMetadata?.author} />
