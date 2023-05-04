@@ -1,3 +1,12 @@
+// get version from package.json
+const { version } = require("./package.json");
+
+const productionDatabasePath = process.env.DATABASE_PATH || "database.db";
+const fs = require("fs");
+const databasePath = fs.existsSync(productionDatabasePath)
+  ? productionDatabasePath
+  : "sample.db";
+
 module.exports = {
   siteMetadata: {
     title: "Sagra",
@@ -5,9 +14,18 @@ module.exports = {
     description: `Preordine sagra`,
     author: "kowalski7cc",
     lang: "it",
+    version: version || "0.0.0",
     features: {
-      coperti_enabled: true,
+      coperti_enabled: false,
     },
+  },
+  flags: {
+    FAST_DEV: true,
+    DEV_SSR: false,
+    PRESERVE_FILE_DOWNLOAD_CACHE: true,
+    DETECT_NODE_MUTATIONS: false,
+    PARALLEL_SOURCING: true,
+    PARTIAL_HYDRATION: false,
   },
   plugins: [
     `gatsby-plugin-image`,
@@ -15,9 +33,9 @@ module.exports = {
       resolve: `gatsby-plugin-manifest`,
       options: {
         name: `Preordine Sagra`,
-        short_name: `Preordine Sagra`,
+        short_name: `Sagra`,
         start_url: `/`,
-        description: `Preordine sagra`,
+        description: `Portale per i preordini alle sagre`,
         lang: `it`,
         background_color: `#ffffff`,
         theme_color: `#870000`,
@@ -55,7 +73,7 @@ module.exports = {
     {
       resolve: `gatsby-source-sqlite`,
       options: {
-        fileName: "./database.db",
+        fileName: databasePath,
         queries: [
           {
             statement: "SELECT * FROM articoli",
