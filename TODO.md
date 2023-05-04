@@ -1,6 +1,7 @@
 - [x] Fix scorrimento vista
-- [x] Salvare il nome in indexedDB
-- [ ] Fix dark mode
-- [ ] Toggle posti e tavolo
+- [x] Salvare il nome in localStorage
+- [x] Salvare ordini in indexedDB
+- [x] Fix dark mode
+- [x] Toggle posti e tavolo
 - [x] Cronologia ordini
-- [ ] Usare React context per l'ordine
+- [ ] Usare React context per il carrello
