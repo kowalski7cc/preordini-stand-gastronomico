@@ -13,10 +13,11 @@ const Layout = ({ title, children, back, bottom, buttons }) => (
           <Button
             variant="accent"
             className="me-2"
+            aria-label="Torna indietro"
             size="sm"
             onClick={() => navigate(-1)}
           >
-            <i className="fs-5 bi bi-arrow-left" />
+            <i aria-hidden="true" className="fs-5 bi bi-arrow-left" />
           </Button>
         )}
         <Navbar.Brand className="text-white text-truncate flex-grow-1">
