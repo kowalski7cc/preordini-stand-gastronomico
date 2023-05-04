@@ -40,7 +40,7 @@ const CheckoutPage = ({ data, location }) => {
     <Layout
       className="mb-5"
       back={true}
-      title="Riepilogo ordine"
+      title="Riepilogo preordine"
       bottom={
         <div className="d-grid gap-2 ">
           <Button
@@ -63,7 +63,7 @@ const CheckoutPage = ({ data, location }) => {
             }}
           >
             <i aria-hidden="true" className="bi bi-cart me-2" />
-            Conferma ordine
+            Conferma preordine
           </Button>
         </div>
       }

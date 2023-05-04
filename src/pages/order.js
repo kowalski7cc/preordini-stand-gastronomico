@@ -16,11 +16,11 @@ const OrderPage = ({ location }) => {
     <Layout
       className="mb-5 align-items-center"
       back={false}
-      title="Ordine"
+      title="Preordine"
       bottom={
         <div className="d-grid gap-2 mt-4">
           <Button onClick={() => navigate("/", { state: {} })}>
-            Nuovo ordine
+            Nuovo preordine
           </Button>
         </div>
       }

@@ -14,6 +14,7 @@ const Layout = ({ title, children, back, bottom, buttons }) => (
             variant="accent"
             className="me-2"
             aria-label="Torna indietro"
+            aria-haspopup="true"
             size="sm"
             onClick={() => navigate(-1)}
           >
