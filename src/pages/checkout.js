@@ -56,6 +56,9 @@ const CheckoutPage = ({ data, location }) => {
                   console.log("Order added: ", id);
                 });
               }
+              if (localStorage) {
+                sessionStorage.removeItem("currentOrder");
+              }
               navigate("/order", { state: receipt.current });
             }}
           >
@@ -66,8 +69,10 @@ const CheckoutPage = ({ data, location }) => {
       }
     >
       <h2>
-        Ordine{" "}
-        {receipt.current.cliente ? "per " + receipt.current.cliente : "anonimo"}
+        {`Prerdine ${
+          receipt.current.cliente ? `per ${receipt.current.cliente}` : "anonimo"
+        }
+        `}
       </h2>
       <ul className="list-unstyled mb-4">
         {coperti_enabled.current && (

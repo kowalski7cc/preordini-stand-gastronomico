@@ -15,7 +15,7 @@ const OrderPage = ({ location }) => {
   return (
     <Layout
       className="mb-5 align-items-center"
-      back={true}
+      back={false}
       title="Ordine"
       bottom={
         <div className="d-grid gap-2 mt-4">

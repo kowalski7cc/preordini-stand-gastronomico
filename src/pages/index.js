@@ -7,10 +7,11 @@ import Form from "react-bootstrap/Form";
 import Accordion from "react-bootstrap/Accordion";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
+import Badge from "react-bootstrap/Badge";
 import Seo from "../components/seo";
 
-const ItemComponent = ({ item, onChange }) => {
-  const [count, setCount] = React.useState(0);
+const ItemComponent = ({ item, onChange, value }) => {
+  const [count, setCount] = React.useState(value || 0);
 
   return (
     <Row className="gap-3">
@@ -82,10 +83,18 @@ const IndexPage = ({ data, location }) => {
       "",
     numeroTavolo: null,
     coperti: 1,
-    righe: location.status?.righe || [],
+    righe:
+      location.status?.righe ||
+      (sessionStorage && JSON.parse(sessionStorage.getItem("currentOrder"))) ||
+      [],
   });
 
-  console.log("state", state);
+  React.useEffect(() => {
+    console.log("ordini: ", state.righe);
+    if (state) {
+      sessionStorage.setItem("currentOrder", JSON.stringify(state.righe));
+    }
+  }, [state]);
 
   const feature_coperti_enabled =
     data.site.siteMetadata.features.coperti_enabled;
@@ -129,9 +138,12 @@ const IndexPage = ({ data, location }) => {
               }
               navigate("/checkout", { state: state });
             }}
-            className="w-100"
+            className="w-100 d-flex align-middle align-items-center justify-content-center"
           >
-            Vedi resoconto
+            <Badge pill bg="warning text-dark me-2">
+              {state.righe?.reduce((acc, r) => acc + r.qta, 0) || 0}
+            </Badge>
+            Vedi il riepilogo
           </Button>
         </div>
       }
@@ -196,6 +208,9 @@ const IndexPage = ({ data, location }) => {
                       <ItemComponent
                         key={index}
                         item={item}
+                        value={JSON.stringify(
+                          state?.righe?.find((r) => r.id === item.sqliteId)?.qta
+                        )}
                         onChange={({ id, amount }) =>
                           updateRow({ id: id, qta: amount })
                         }
