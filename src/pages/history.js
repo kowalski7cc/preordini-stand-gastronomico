@@ -66,7 +66,7 @@ const HistoryPage = ({ data }) => {
         orders.map((order, index) => (
           <div className="mb-5" key={index}>
             <div className="d-flex align-middle align-items-center">
-              <h3 className="flex-fill">Ordine</h3>
+              <h3 className="flex-fill">{`Ordine ${order.id}`}</h3>
               <Button
                 onClick={() => {
                   navigate("/order", { state: order });

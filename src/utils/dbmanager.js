@@ -68,8 +68,10 @@ class OrderDatabaseManager {
         reject("Errore durante la lettura degli ordini");
       };
 
-      request.onsuccess = () => {
-        resolve(request.result);
+      request.onsuccess = (result) => {
+        console.log("Orders read: ", result);
+        const invertedResult = result.target.result.reverse();
+        resolve(invertedResult);
       };
     });
   }

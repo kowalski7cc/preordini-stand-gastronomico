@@ -85,12 +85,12 @@ const IndexPage = ({ data, location }) => {
     coperti: 1,
     righe:
       location.status?.righe ||
-      (sessionStorage && JSON.parse(sessionStorage.getItem("currentOrder"))) ||
+      (typeof sessionStorage !== "undefined" &&
+        JSON.parse(sessionStorage.getItem("currentOrder"))) ||
       [],
   });
 
   React.useEffect(() => {
-    console.log("ordini: ", state.righe);
     if (state) {
       sessionStorage.setItem("currentOrder", JSON.stringify(state.righe));
     }
