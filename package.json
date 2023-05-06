@@ -1,8 +1,8 @@
 {
-  "name": "preordini-stand-gastronomico",
+  "name": "preordini-gestione-festa",
   "version": "1.2.0",
   "private": true,
-  "description": "...",
+  "description": "Portale per i preordini alle feste di paese",
   "author": "kowalski7cc",
   "keywords": [
     "gatsby"

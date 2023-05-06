@@ -57,7 +57,8 @@ const CheckoutPage = ({ data, location }) => {
                 });
               }
               if (localStorage) {
-                sessionStorage.removeItem("currentOrder");
+                sessionStorage.removeItem("currentOrderCart");
+                sessionStorage.removeItem("currentOrderNotes");
               }
               navigate("/order", { state: receipt.current });
             }}
@@ -69,7 +70,7 @@ const CheckoutPage = ({ data, location }) => {
       }
     >
       <h2>
-        {`Prerdine ${
+        {`Preordine ${
           receipt.current.cliente ? `per ${receipt.current.cliente}` : "anonimo"
         }
         `}
@@ -90,6 +91,13 @@ const CheckoutPage = ({ data, location }) => {
           </li>
         )}
       </ul>
+      {receipt.current.note && (
+        <div className="mb-4">
+          <h3>Note aggiuntive</h3>
+          <p>{receipt.current.note}</p>
+        </div>
+      )}
+      <h3>Carrello</h3>
       <div className="table-responsive">
         <Table className="mb-5" striped hover>
           <thead>

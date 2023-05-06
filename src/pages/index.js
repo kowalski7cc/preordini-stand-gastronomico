@@ -86,13 +86,18 @@ const IndexPage = ({ data, location }) => {
     righe:
       location.status?.righe ||
       (typeof sessionStorage !== "undefined" &&
-        JSON.parse(sessionStorage.getItem("currentOrder"))) ||
+        JSON.parse(sessionStorage.getItem("currentOrderCart"))) ||
       [],
+    note:
+      (typeof sessionStorage !== "undefined" &&
+        sessionStorage.getItem("currentOrderNotes")) ||
+      "",
   });
 
   React.useEffect(() => {
     if (state) {
-      sessionStorage.setItem("currentOrder", JSON.stringify(state.righe));
+      sessionStorage.setItem("currentOrderCart", JSON.stringify(state.righe));
+      sessionStorage.setItem("currentOrderNotes", state.note);
     }
   }, [state]);
 
@@ -148,7 +153,7 @@ const IndexPage = ({ data, location }) => {
         </div>
       }
     >
-      <Form>
+      <Form className="mb-3">
         <Row>
           <Col lg={feature_coperti_enabled ? 4 : 12} md={12}>
             <Form.Group className="mb-3" controlId="orderName">
@@ -182,7 +187,7 @@ const IndexPage = ({ data, location }) => {
             lg={4}
             sm={feature_coperti_enabled ? 6 : 12}
           >
-            <Form.Group className="mb-3" controlId="orderPeople">
+            <Form.Group className="" controlId="orderPeople">
               <Form.Label>Coperti</Form.Label>
               <Form.Control
                 type="number"
@@ -196,32 +201,42 @@ const IndexPage = ({ data, location }) => {
               />
             </Form.Group>
           </Col>
+          <Col xs={12}>
+            <Form.Label>Note aggiuntive</Form.Label>
+            <Form.Control
+              as="textarea"
+              rows={3}
+              value={state.note || ""}
+              placeholder="Inserisci eventuali note aggiuntive"
+              onChange={(v) => setState({ ...state, note: v.target.value })}
+            />
+          </Col>
         </Row>
-
-        <Accordion className="mb-4" defaultActiveKey="0">
-          {data.categorie.nodes.map((categoria, index) => (
-            <Accordion.Item eventKey={index} key={index}>
-              <Accordion.Header>{categoria.descrizione}</Accordion.Header>
-              <Accordion.Body className="d-grid gap-4">
-                {categoria.items.length > 0
-                  ? categoria.items.map((item, index) => (
-                      <ItemComponent
-                        key={index}
-                        item={item}
-                        value={JSON.stringify(
-                          state?.righe?.find((r) => r.id === item.sqliteId)?.qta
-                        )}
-                        onChange={({ id, amount }) =>
-                          updateRow({ id: id, qta: amount })
-                        }
-                      />
-                    ))
-                  : "Nessun articolo disponibile in questa categoria"}
-              </Accordion.Body>
-            </Accordion.Item>
-          ))}
-        </Accordion>
       </Form>
+      <Accordion className="mb-4" defaultActiveKey="0">
+        {data.categorie.nodes.map((categoria, index) => (
+          <Accordion.Item eventKey={index} key={index}>
+            <Accordion.Header>{categoria.descrizione}</Accordion.Header>
+            <Accordion.Body className="d-grid gap-4">
+              {categoria.items.length > 0
+                ? categoria.items.map((item, index) => (
+                    <ItemComponent
+                      key={index}
+                      item={item}
+                      value={
+                        state?.righe?.find((r) => r.id === item.sqliteId)
+                          ?.qta || 0
+                      }
+                      onChange={({ id, amount }) =>
+                        updateRow({ id: id, qta: amount })
+                      }
+                    />
+                  ))
+                : "Nessun articolo disponibile in questa categoria"}
+            </Accordion.Body>
+          </Accordion.Item>
+        ))}
+      </Accordion>
     </Layout>
   );
 };
