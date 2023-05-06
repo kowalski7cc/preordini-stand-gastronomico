@@ -32,10 +32,10 @@ module.exports = {
     {
       resolve: `gatsby-plugin-manifest`,
       options: {
-        name: `Preordine Sagra`,
-        short_name: `Sagra`,
+        name: `Preordine festa`,
+        short_name: `Preordine festa`,
         start_url: `/`,
-        description: `Portale per i preordini alle sagre`,
+        description: `Portale per i preordini alle feste di paese`,
         lang: `it`,
         background_color: `#ffffff`,
         theme_color: `#870000`,
