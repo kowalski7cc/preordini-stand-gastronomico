@@ -10,13 +10,14 @@ const databasePath = fs.existsSync(productionDatabasePath)
 module.exports = {
   siteMetadata: {
     title: "Sagra",
-    siteUrl: `https://preordini-sagra.netlify.app`,
+    siteUrl: `https://preordinifeste.it/`,
     description: `Preordine sagra`,
     author: "kowalski7cc",
     lang: "it",
     version: version || "0.0.0",
     features: {
       coperti_enabled: false,
+      use_encode_uri: true,
     },
   },
   flags: {
@@ -46,7 +47,7 @@ module.exports = {
     {
       resolve: `gatsby-plugin-canonical-urls`,
       options: {
-        siteUrl: `https://preordini-sagra.netlify.app`,
+        siteUrl: `https://preordinifeste.it/`,
       },
     },
     {

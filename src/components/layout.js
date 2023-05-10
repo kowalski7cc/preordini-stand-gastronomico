@@ -15,6 +15,7 @@ const Layout = ({ title, children, back, bottom, buttons }) => (
             className="me-2"
             aria-label="Torna indietro"
             aria-haspopup="true"
+            title="Indietro"
             size="sm"
             onClick={() => navigate(-1)}
           >
@@ -27,10 +28,14 @@ const Layout = ({ title, children, back, bottom, buttons }) => (
         <div id="nav-buttons">{buttons}</div>
       </Container>
     </Navbar>
-    <Container className="h-100 mb-auto">{children}</Container>
-    <footer className="bg-body mt-auto sticky-bottom">
-      <Container className="mt-3 mb-3">{bottom}</Container>
-    </footer>
+    <Container className="container-fluid flex-grow-1 p-0'">
+      {children}
+    </Container>
+    {bottom && (
+      <footer className="bg-body align align-middle sticky-bottom">
+        <Container className="my-3">{bottom}</Container>
+      </footer>
+    )}
   </div>
 );
 

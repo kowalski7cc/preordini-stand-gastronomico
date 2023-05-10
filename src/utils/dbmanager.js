@@ -69,7 +69,6 @@ class OrderDatabaseManager {
       };
 
       request.onsuccess = (result) => {
-        console.log("Orders read: ", result);
         const invertedResult = result.target.result.reverse();
         resolve(invertedResult);
       };
