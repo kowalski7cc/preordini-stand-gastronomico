@@ -51,9 +51,11 @@ const ItemComponent = ({ item, onChange, value }) => {
           <Form.Control
             className="text-center"
             type="text"
-            disabled={true}
+            disabled={false}
             readOnly={true}
+            tabIndex={-1}
             min="0"
+            onSelect={(e) => e.target.blur()}
             value={count}
           />
           <Button
@@ -76,13 +78,16 @@ const ItemComponent = ({ item, onChange, value }) => {
 };
 
 const IndexPage = ({ data, location }) => {
+  const feature_coperti_enabled =
+    data.site.siteMetadata.features.coperti_enabled;
+
   const [state, setState] = React.useState({
     cliente:
       (typeof localStorage !== "undefined" &&
         localStorage.getItem("cliente")) ||
       "",
-    numeroTavolo: null,
-    coperti: 1,
+    numeroTavolo: feature_coperti_enabled ? "" : null,
+    coperti: feature_coperti_enabled ? 1 : null,
     righe:
       location.status?.righe ||
       (typeof sessionStorage !== "undefined" &&
@@ -100,9 +105,6 @@ const IndexPage = ({ data, location }) => {
       sessionStorage.setItem("currentOrderNotes", state.note);
     }
   }, [state]);
-
-  const feature_coperti_enabled =
-    data.site.siteMetadata.features.coperti_enabled;
 
   const updateRow = (row) => {
     const index = state.righe.findIndex((r) => r.id === row.id);
@@ -127,6 +129,7 @@ const IndexPage = ({ data, location }) => {
       buttons={
         <Button
           variant="accent"
+          title="Cronologia ordini"
           aria-label="Cronologia ordini"
           onClick={() => navigate("/history")}
         >

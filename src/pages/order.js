@@ -1,12 +1,45 @@
 import * as React from "react";
-import { navigate } from "gatsby";
+import { graphql, navigate } from "gatsby";
 import QRCode from "react-qr-code";
 
 import Layout from "../components/layout";
 import Button from "react-bootstrap/Button";
 import Seo from "../components/seo";
 
-const OrderPage = ({ location }) => {
+function optimize(obj) {
+  const o = Object.fromEntries(
+    Object.entries(obj).filter(
+      ([_, v]) => v !== null && v !== undefined && v !== ""
+    )
+  );
+  let { id, key, orderDate, ...rest } = o;
+  return rest;
+}
+
+const OrderPage = ({ location, data }) => {
+  const [hasFullScreen, setHasFullScreen] = React.useState(false);
+  React.useEffect(() => {
+    if (typeof document !== "undefined") {
+      setHasFullScreen(
+        document.fullscreenEnabled || document.webkitFullscreenEnabled
+      );
+    }
+  }, []);
+
+  // React state for full screen
+  const [fullScreen, setFullScreen] = React.useState(false);
+  React.useEffect(() => {
+    if (document.fullscreenEnabled) {
+      document.onfullscreenchange = () => {
+        setFullScreen(document.fullscreenElement !== null);
+      };
+    }
+  });
+
+  React.useEffect(() => {
+    console.log(JSON.stringify(optimize(location.state)));
+  }, [location.state]);
+
   if (typeof window !== "undefined" && !location.state) {
     navigate("/");
     return null;
@@ -25,19 +58,25 @@ const OrderPage = ({ location }) => {
         </div>
       }
       buttons={
-        <Button
-          aria-label="Schermo intero"
-          onClick={() => {
-            // Fullscreen API is not supported by all browsers
-            if (document.fullscreenEnabled) {
-              // Put qrcode-div in fullscreen
-              document.getElementById("qrcode-div").requestFullscreen();
-            }
-          }}
-          variant="accent"
-        >
-          <i aria-hidden="true" className="bi bi-fullscreen"></i>
-        </Button>
+        hasFullScreen && (
+          <Button
+            title="Schermo intero"
+            aria-label="Schermo intero"
+            onClick={() => {
+              const qrcodeDiv = document.getElementById("qrcode-div");
+              // Fullscreen API is not supported by all browsers
+              if (document.fullscreenEnabled) {
+                // Put qrcode-div in fullscreen
+                qrcodeDiv.requestFullscreen();
+              } else if (document.webkitFullscreenEnabled) {
+                qrcodeDiv.webkitRequestFullscreen();
+              }
+            }}
+            variant="accent"
+          >
+            <i aria-hidden="true" className="bi bi-fullscreen"></i>
+          </Button>
+        )
       }
     >
       <div className="h-100 my-auto align-items-center d-flex">
@@ -56,8 +95,21 @@ const OrderPage = ({ location }) => {
               >
                 <QRCode
                   className="mb-2 w-100 border border-5 border-white"
-                  style={{ maxHeight: "4cm", maxWidth: "4cm" }}
-                  value={encodeURIComponent(JSON.stringify(location.state))}
+                  viewBox={`0 0 256 256`}
+                  size={256}
+                  level="L"
+                  style={
+                    fullScreen
+                      ? { maxHeight: "6cm", maxWidth: "6cm" }
+                      : { maxHeight: "5cm", maxWidth: "5cm" }
+                  }
+                  value={
+                    data.site.siteMetadata.features?.use_encode_uri === true
+                      ? encodeURIComponent(
+                          JSON.stringify(optimize(location.state))
+                        )
+                      : JSON.stringify(optimize(location.state))
+                  }
                 />
               </div>
             )}
@@ -67,6 +119,18 @@ const OrderPage = ({ location }) => {
     </Layout>
   );
 };
+
+export const query = graphql`
+  query {
+    site {
+      siteMetadata {
+        features {
+          use_encode_uri
+        }
+      }
+    }
+  }
+`;
 
 export default OrderPage;
 

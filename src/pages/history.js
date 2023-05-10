@@ -41,6 +41,7 @@ const HistoryPage = ({ data }) => {
       buttons={
         <Button
           variant="accent"
+          title="Cancella cronologia"
           id="btn-clear-history"
           disabled={!orders.length}
           onClick={() => {
@@ -68,6 +69,7 @@ const HistoryPage = ({ data }) => {
             <div className="d-flex align-middle align-items-center">
               <h3 className="flex-fill">{`Ordine ${order.id}`}</h3>
               <Button
+                title="Visualizza QR code"
                 onClick={() => {
                   navigate("/order", { state: order });
                 }}
@@ -88,9 +90,12 @@ const HistoryPage = ({ data }) => {
                 <tbody>
                   {order.righe.map((row, index) => (
                     <tr key={index}>
-                      <td>{itemsNames[row.id].description}</td>
+                      <td>
+                        {itemsNames[row.id]?.description ||
+                          "Descrizione mancante"}
+                      </td>
                       <td>{row.qta}</td>
-                      <td> {(itemsNames[row.id].price || 0).toFixed(2)}€</td>
+                      <td> {(itemsNames[row.id]?.price || 0).toFixed(2)}€</td>
                     </tr>
                   ))}
                 </tbody>
