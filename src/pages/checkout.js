@@ -80,7 +80,7 @@ const CheckoutPage = ({ data, location }) => {
           <li key={"tavolo"}>
             <i className="bi bi-geo-alt me-2" />
             {receipt.current.numeroTavolo
-              ? "Tavolo " + receipt.numeroTavolo
+              ? "Tavolo " + receipt.current.numeroTavolo
               : "Da asporto"}
           </li>
         )}
