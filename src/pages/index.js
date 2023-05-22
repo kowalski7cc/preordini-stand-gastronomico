@@ -86,8 +86,18 @@ const IndexPage = ({ data, location }) => {
       (typeof localStorage !== "undefined" &&
         localStorage.getItem("cliente")) ||
       "",
-    numeroTavolo: feature_coperti_enabled ? "" : null,
-    coperti: feature_coperti_enabled ? 1 : null,
+    numeroTavolo: feature_coperti_enabled
+      ? location.status?.numeroTavolo ||
+        (typeof sessionStorage !== "undefined" &&
+          JSON.parse(sessionStorage.getItem("currentOrderTable"))) ||
+        ""
+      : null,
+    coperti: feature_coperti_enabled
+      ? location.status?.coperti ||
+        (typeof sessionStorage !== "undefined" &&
+          JSON.parse(sessionStorage.getItem("currentOrderCoperti"))) ||
+        1
+      : null,
     righe:
       location.status?.righe ||
       (typeof sessionStorage !== "undefined" &&
@@ -103,6 +113,8 @@ const IndexPage = ({ data, location }) => {
     if (state) {
       sessionStorage.setItem("currentOrderCart", JSON.stringify(state.righe));
       sessionStorage.setItem("currentOrderNotes", state.note);
+      sessionStorage.setItem("currentOrderTable", state.numeroTavolo);
+      sessionStorage.setItem("currentOrderCoperti", state.coperti);
     }
   }, [state]);
 
@@ -179,6 +191,7 @@ const IndexPage = ({ data, location }) => {
                 placeholder="Inserisci il numero del tavolo"
                 min="0"
                 required
+                value={state.numeroTavolo || ""}
                 onChange={(v) =>
                   setState({ ...state, numeroTavolo: v.target.value })
                 }
@@ -197,6 +210,7 @@ const IndexPage = ({ data, location }) => {
                 onChange={(v) =>
                   setState({ ...state, coperti: v.target.value })
                 }
+                value={state.coperti || 1}
                 required
                 min="1"
                 defaultValue="1"

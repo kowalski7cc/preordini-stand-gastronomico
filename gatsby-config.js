@@ -16,7 +16,7 @@ module.exports = {
     lang: "it",
     version: version || "0.0.0",
     features: {
-      coperti_enabled: false,
+      coperti_enabled: true,
       use_encode_uri: true,
     },
   },
