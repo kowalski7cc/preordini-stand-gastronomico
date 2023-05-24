@@ -89,13 +89,13 @@ const IndexPage = ({ data, location }) => {
     numeroTavolo: feature_coperti_enabled
       ? location.status?.numeroTavolo ||
         (typeof sessionStorage !== "undefined" &&
-          JSON.parse(sessionStorage.getItem("currentOrderTable"))) ||
+          sessionStorage.getItem("currentOrderTable")) ||
         ""
       : null,
     coperti: feature_coperti_enabled
       ? location.status?.coperti ||
         (typeof sessionStorage !== "undefined" &&
-          JSON.parse(sessionStorage.getItem("currentOrderCoperti"))) ||
+          sessionStorage.getItem("currentOrderCoperti")) ||
         1
       : null,
     righe:
