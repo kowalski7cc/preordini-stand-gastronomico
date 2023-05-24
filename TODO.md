@@ -5,3 +5,6 @@
 - [x] Toggle posti e tavolo
 - [x] Cronologia ordini
 - [ ] Usare React context per il carrello
+- [ ] Ordinare gli elementi delle sezioni in ordine alfabetico
+- [ ] Dare un ordine arbitrario alle sezioni
+- [ ] Limitare il numero di oggetti che possono essere messi nel carrello
