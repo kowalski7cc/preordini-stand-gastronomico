@@ -156,6 +156,11 @@ const IndexPage = ({ data, location }) => {
               if (localStorage) {
                 localStorage.setItem("cliente", state.cliente);
               }
+              if (state.coperti < 1 && feature_coperti_enabled) {
+                alert("Numero di coperti non valido");
+                return;
+              }
+
               navigate("/checkout", { state: state });
             }}
             className="w-100 d-flex align-middle align-items-center justify-content-center"
@@ -189,7 +194,7 @@ const IndexPage = ({ data, location }) => {
               <Form.Control
                 type="number"
                 placeholder="Inserisci il numero del tavolo"
-                min="0"
+                min={0}
                 required
                 value={state.numeroTavolo || ""}
                 onChange={(v) =>
@@ -210,11 +215,11 @@ const IndexPage = ({ data, location }) => {
                 onChange={(v) =>
                   setState({ ...state, coperti: v.target.value })
                 }
-                value={state.coperti || 1}
+                value={state.coperti || ""}
                 required
-                min="1"
-                defaultValue="1"
-                placeholder="Coperti"
+                min={1}
+                defaultValue={1}
+                placeholder="Inserisci il numero di vassoi"
               />
             </Form.Group>
           </Col>
