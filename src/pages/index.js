@@ -89,7 +89,8 @@ const IndexPage = ({ data, location }) => {
     numeroTavolo: feature_coperti_enabled
       ? location.status?.numeroTavolo ||
         (typeof sessionStorage !== "undefined" &&
-          sessionStorage.getItem("currentOrderTable")) ||
+          sessionStorage.getItem("currentOrderTable") !== "" &&
+          JSON.parse(sessionStorage.getItem("currentOrderTable"))) ||
         ""
       : null,
     coperti: feature_coperti_enabled
@@ -141,7 +142,6 @@ const IndexPage = ({ data, location }) => {
       buttons={
         <Button
           variant="accent"
-          title="Cronologia ordini"
           aria-label="Cronologia ordini"
           onClick={() => navigate("/history")}
         >

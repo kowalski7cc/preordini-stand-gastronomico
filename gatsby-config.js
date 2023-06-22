@@ -18,6 +18,7 @@ module.exports = {
     features: {
       coperti_enabled: true,
       use_encode_uri: true,
+      site_enabled: false,
     },
   },
   flags: {
