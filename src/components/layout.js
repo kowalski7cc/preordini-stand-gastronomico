@@ -63,30 +63,28 @@ const Layout = ({ title, children, back, bottom, buttons }) => {
           </Navbar.Brand>
         </Container>
       </Navbar>
-      <Container className="container-fluid d-flex align-items-center flex-grow-1 p-0'">
-        <div className="d-flex flex-column justify-content-center align-items-center h-100">
-          <div className="text-center">
-            <h1 className="display-1 mb-4">🎉</h1>
+      <Container className="container-fluid justify-content-center d-flex align-items-center flex-grow-1 p-0'">
+        <div className="text-center">
+          <h1 className="display-1 mb-4">🎉</h1>
 
-            {nextSagra > Date.now() ? (
-              <h3 className="display-6">
-                Partecipa all'allegria della prossima festa da
-                <br />
-                <strong>
-                  {nextSagra.toLocaleDateString("it-IT", {
-                    weekday: "long",
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
-                </strong>
-              </h3>
-            ) : (
-              <h3 className="display-6">
-                Al momento non c'è nessuna festa in programma.
-              </h3>
-            )}
-          </div>
+          {nextSagra > Date.now() ? (
+            <h3 className="display-6">
+              Partecipa all'allegria della prossima festa da
+              <br />
+              <strong>
+                {nextSagra.toLocaleDateString("it-IT", {
+                  weekday: "long",
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}
+              </strong>
+            </h3>
+          ) : (
+            <h3 className="display-6">
+              Al momento non c'è nessuna festa in programma.
+            </h3>
+          )}
         </div>
       </Container>
     </div>
