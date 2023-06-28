@@ -3,9 +3,18 @@ import "../style/main.scss";
 import Container from "react-bootstrap/Container";
 import Navbar from "react-bootstrap/Navbar";
 import Button from "react-bootstrap/Button";
+import Badge from "react-bootstrap/Badge";
 import { navigate, useStaticQuery, graphql } from "gatsby";
 
 const Layout = ({ title, children, back, bottom, buttons }) => {
+  const [imadev, setImadev] = React.useState(false);
+
+  React.useEffect(() => {
+    if (typeof typeof localStorage !== "undefined") {
+      setImadev(localStorage.getItem("imadev") === "true");
+    }
+  }, []);
+
   const data = useStaticQuery(graphql`
     query {
       site {
@@ -39,6 +48,11 @@ const Layout = ({ title, children, back, bottom, buttons }) => {
           )}
           <Navbar.Brand className="text-white text-truncate flex-grow-1">
             {title}
+            {imadev && (
+              <Badge className="ms-3" bg="warning" text="dark">
+                DEV
+              </Badge>
+            )}
           </Navbar.Brand>
           <div id="nav-buttons">{buttons}</div>
         </Container>
@@ -90,7 +104,7 @@ const Layout = ({ title, children, back, bottom, buttons }) => {
     </div>
   );
 
-  return data.site.siteMetadata.features.site_enabled === "true"
+  return data.site.siteMetadata.features.site_enabled === "true" || imadev
     ? layoutEnabled
     : layoutDisabled;
 };
