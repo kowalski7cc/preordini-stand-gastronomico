@@ -124,7 +124,7 @@ const Layout = ({ title, children, back, bottom, buttons }) => {
     </div>
   );
 
-  return data.site.siteMetadata.features.site_enabled === "true" || imadev
+  return data.site.siteMetadata.features.site_enabled === true || imadev
     ? layoutEnabled
     : layoutDisabled;
 };

@@ -176,6 +176,8 @@ const IndexPage = ({ data, location }) => {
                 <i className="bi bi-bug" />
               </Button>
               <Modal
+                fullscreen="sm-down"
+                size="lg"
                 centered
                 show={showDebug}
                 onHide={() => setShowDebug(false)}
@@ -385,6 +387,8 @@ export const query = graphql`
         version
         features {
           coperti_enabled
+          use_encode_uri
+          site_enabled
         }
       }
     }
