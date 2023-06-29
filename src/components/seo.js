@@ -2,14 +2,6 @@ import * as React from "react";
 import { useStaticQuery, graphql } from "gatsby";
 
 function Seo({ description, title, children }) {
-  const [imadev, setImadev] = React.useState(false);
-
-  React.useEffect(() => {
-    if (typeof typeof localStorage !== "undefined") {
-      setImadev(localStorage.getItem("imadev") === "true");
-    }
-  }, []);
-
   const { site } = useStaticQuery(
     graphql`
       query {
@@ -26,7 +18,7 @@ function Seo({ description, title, children }) {
   );
 
   const metaDescription = description || site.siteMetadata.description;
-  const defaultTitle = site.siteMetadata?.title + (imadev ? " (DEV)" : "");
+  const defaultTitle = site.siteMetadata?.titles;
 
   return (
     <>

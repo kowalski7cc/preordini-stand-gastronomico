@@ -7,13 +7,18 @@ import Badge from "react-bootstrap/Badge";
 import { navigate, useStaticQuery, graphql } from "gatsby";
 
 const Layout = ({ title, children, back, bottom, buttons }) => {
-  const [imadev, setImadev] = React.useState(false);
+  let imadev = false;
 
-  React.useEffect(() => {
-    if (typeof typeof localStorage !== "undefined") {
-      setImadev(localStorage.getItem("imadev") === "true");
+  if (typeof localStorage !== "undefined") {
+    if (typeof window !== "undefined") {
+      // get query string params imadev value
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.has("imadev")) {
+        localStorage.setItem("imadev", urlParams.get("imadev"));
+      }
     }
-  }, []);
+    imadev = localStorage.getItem("imadev") === "true";
+  }
 
   const data = useStaticQuery(graphql`
     query {
@@ -46,10 +51,10 @@ const Layout = ({ title, children, back, bottom, buttons }) => {
               <i aria-hidden="true" className="fs-5 bi bi-arrow-left" />
             </Button>
           )}
-          <Navbar.Brand className="text-white text-truncate flex-grow-1">
+          <Navbar.Brand className="text-white d-flex align-items-center text-truncate flex-grow-1">
             {title}
             {imadev && (
-              <Badge className="ms-3" bg="warning" text="dark">
+              <Badge className="ms-2" bg="warning" text="dark">
                 DEV
               </Badge>
             )}

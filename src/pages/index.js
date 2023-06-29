@@ -218,7 +218,6 @@ const IndexPage = ({ data, location }) => {
                 value={state.coperti || ""}
                 required
                 min={1}
-                defaultValue={1}
                 placeholder="Inserisci il numero di vassoi"
               />
             </Form.Group>
