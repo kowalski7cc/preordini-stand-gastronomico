@@ -6,11 +6,14 @@ import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Accordion from "react-bootstrap/Accordion";
 import Col from "react-bootstrap/Col";
+import Modal from "react-bootstrap/Modal";
 import Row from "react-bootstrap/Row";
 import Badge from "react-bootstrap/Badge";
 import Seo from "../components/seo";
 
-const ItemComponent = ({ item, onChange, value }) => {
+import OrderDatabaseManager from "../utils/dbmanager";
+
+const ItemComponent = ({ item, onChange, value, debug = false }) => {
   const [count, setCount] = React.useState(value || 0);
 
   return (
@@ -22,7 +25,10 @@ const ItemComponent = ({ item, onChange, value }) => {
         xl={8}
         className="d-flex align-middle align-items-center"
       >
-        <strong>{item.descrizione}</strong>
+        <strong>
+          {item.descrizione}
+          {debug ? ` (itemid: ${item.sqliteId})` : ""}
+        </strong>
       </Col>
       <Col
         xs={"auto"}
@@ -78,6 +84,16 @@ const ItemComponent = ({ item, onChange, value }) => {
 };
 
 const IndexPage = ({ data, location }) => {
+  const [db, setDb] = React.useState(null);
+  React.useEffect(() => {
+    if (!db) {
+      const ordersDB = new OrderDatabaseManager();
+      ordersDB.open().then((db) => {
+        setDb(db);
+      });
+    }
+  }, [db]);
+
   const feature_coperti_enabled =
     data.site.siteMetadata.features.coperti_enabled;
 
@@ -110,6 +126,9 @@ const IndexPage = ({ data, location }) => {
       "",
   });
 
+  const [imadev, setImadev] = React.useState(false);
+  const [showDebug, setShowDebug] = React.useState(false);
+
   React.useEffect(() => {
     if (state) {
       sessionStorage.setItem("currentOrderCart", JSON.stringify(state.righe));
@@ -118,6 +137,12 @@ const IndexPage = ({ data, location }) => {
       sessionStorage.setItem("currentOrderCoperti", state.coperti);
     }
   }, [state]);
+
+  React.useEffect(() => {
+    if (typeof localStorage !== "undefined") {
+      localStorage.getItem("imadev") === "true" && setImadev(true);
+    }
+  }, [imadev]);
 
   const updateRow = (row) => {
     const index = state.righe.findIndex((r) => r.id === row.id);
@@ -140,13 +165,89 @@ const IndexPage = ({ data, location }) => {
       className="mb-5"
       title="Nuovo preordine"
       buttons={
-        <Button
-          variant="accent"
-          aria-label="Cronologia ordini"
-          onClick={() => navigate("/history")}
-        >
-          <i className="bi bi-clock-history" />
-        </Button>
+        <div className="d-grid gap-2 justify-content-md-end d-flex">
+          {imadev && (
+            <>
+              <Button
+                variant="accent"
+                aria-label="Show debug info"
+                onClick={() => setShowDebug(true)}
+              >
+                <i className="bi bi-bug" />
+              </Button>
+              <Modal
+                centered
+                show={showDebug}
+                onHide={() => setShowDebug(false)}
+              >
+                <Modal.Header closeButton>
+                  <Modal.Title>Debug informations</Modal.Title>
+                </Modal.Header>
+
+                <Modal.Body>
+                  <h5>App version</h5>
+                  <code className="fs-5">
+                    <pre>{data?.site?.siteMetadata?.version}</pre>
+                  </code>
+                  <h5>Features</h5>
+                  <code className="fs-5">
+                    <pre>
+                      {JSON.stringify(
+                        data?.site?.siteMetadata.features,
+                        null,
+                        2
+                      )}
+                    </pre>
+                  </code>
+                  <h5>State</h5>
+                  <code className="fs-5">
+                    <pre>{JSON.stringify(state, null, 2)}</pre>
+                  </code>
+                  <h5>Local Storage</h5>
+                  <code className="fs-5">
+                    <pre>{JSON.stringify(localStorage, null, 2)}</pre>
+                  </code>
+                  <h5>Session Storage</h5>
+                  <code className="fs-5">
+                    <pre>
+                      {JSON.stringify(
+                        Object.fromEntries(
+                          Object.entries(sessionStorage).filter(
+                            ([key, value]) => !key.startsWith("@@")
+                          )
+                        ),
+                        null,
+                        2
+                      )}
+                    </pre>
+                  </code>
+                  <h5>Orders database</h5>
+                  {db ? (
+                    <code className="fs-5">
+                      <pre>{JSON.stringify(db, null, 2)}</pre>
+                    </code>
+                  ) : (
+                    <code className="fs-5">
+                      <pre>Database not ready</pre>
+                    </code>
+                  )}
+
+                  <h5>Products</h5>
+                  <code className="fs-5">
+                    <pre>{JSON.stringify(data.categorie.nodes, null, 2)}</pre>
+                  </code>
+                </Modal.Body>
+              </Modal>
+            </>
+          )}
+          <Button
+            variant="accent"
+            aria-label="Cronologia ordini"
+            onClick={() => navigate("/history")}
+          >
+            <i className="bi bi-clock-history" />
+          </Button>
+        </div>
       }
       bottom={
         <div className="d-grid gap-2">
@@ -237,13 +338,17 @@ const IndexPage = ({ data, location }) => {
       <Accordion className="mb-4" defaultActiveKey="0">
         {data.categorie.nodes.map((categoria, index) => (
           <Accordion.Item eventKey={index} key={index}>
-            <Accordion.Header>{categoria.descrizione}</Accordion.Header>
+            <Accordion.Header>
+              {categoria.descrizione +
+                (imadev ? ` (categoryid: ${categoria.sqliteId})` : "")}
+            </Accordion.Header>
             <Accordion.Body className="d-grid gap-4">
               {categoria.items.length > 0
                 ? categoria.items.map((item, index) => (
                     <ItemComponent
                       key={index}
                       item={item}
+                      debug={imadev}
                       value={
                         state?.righe?.find((r) => r.id === item.sqliteId)
                           ?.qta || 0
@@ -277,6 +382,7 @@ export const query = graphql`
     }
     site {
       siteMetadata {
+        version
         features {
           coperti_enabled
         }

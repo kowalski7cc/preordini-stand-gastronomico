@@ -36,32 +36,47 @@ const Layout = ({ title, children, back, bottom, buttons }) => {
 
   const layoutEnabled = (
     <div className="d-flex flex-column min-vh-100">
-      <Navbar className="sticky-top mb-3" bg="accent">
-        <Container className="flex-row justify-content-start">
-          {back && (
-            <Button
-              variant="accent"
-              className="me-2"
-              aria-label="Torna indietro"
-              aria-haspopup="true"
-              title="Indietro"
-              size="sm"
-              onClick={() => navigate(-1)}
-            >
-              <i aria-hidden="true" className="fs-5 bi bi-arrow-left" />
-            </Button>
-          )}
-          <Navbar.Brand className="text-white d-flex align-items-center text-truncate flex-grow-1">
-            {title}
-            {imadev && (
-              <Badge className="ms-2" bg="warning" text="dark">
-                DEV
-              </Badge>
+      <header className="mb-3">
+        <Navbar className={`sticky-top`} bg="accent">
+          <Container className="flex-row justify-content-start">
+            {back && (
+              <Button
+                variant="accent"
+                className="me-2"
+                aria-label="Torna indietro"
+                aria-haspopup="true"
+                title="Indietro"
+                size="sm"
+                onClick={() => navigate(-1)}
+              >
+                <i aria-hidden="true" className="fs-5 bi bi-arrow-left" />
+              </Button>
             )}
-          </Navbar.Brand>
-          <div id="nav-buttons">{buttons}</div>
-        </Container>
-      </Navbar>
+            <Navbar.Brand className="text-white d-flex align-items-center text-truncate flex-grow-1">
+              {title}
+              {imadev && (
+                <Badge
+                  className="ms-2 d-none d-sm-block"
+                  bg="warning"
+                  text="dark"
+                >
+                  DEV
+                </Badge>
+              )}
+            </Navbar.Brand>
+
+            <div id="nav-buttons">{buttons}</div>
+          </Container>
+        </Navbar>
+        <Navbar bg="warning" className="py-0 d-block d-sm-none">
+          <Container className="flex-row justify-content-center">
+            <Navbar.Text className="me-2 text-black fw-bold">
+              Developer mode
+            </Navbar.Text>
+          </Container>
+        </Navbar>
+      </header>
+
       <Container className="container-fluid flex-grow-1 p-0'">
         {children}
       </Container>

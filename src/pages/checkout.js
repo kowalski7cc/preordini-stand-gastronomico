@@ -30,6 +30,13 @@ const CheckoutPage = ({ data, location }) => {
     }
   }, [db]);
 
+  const [imadev, setImadev] = React.useState(false);
+  React.useEffect(() => {
+    if (typeof localStorage !== "undefined") {
+      localStorage.getItem("imadev") === "true" && setImadev(true);
+    }
+  }, [imadev]);
+
   const receipt = React.useRef(location.state || { righe: [] });
 
   const coperti_enabled = React.useRef(
@@ -136,6 +143,15 @@ const CheckoutPage = ({ data, location }) => {
           </thead>
         </Table>
       </div>
+      {imadev && (
+        <>
+          <h3>Receipt order data</h3>
+          {/* <p>{JSON.stringify(receipt, null, "<br/>")}</p> */}
+          <code className="fs-5">
+            <pre>{JSON.stringify(receipt, null, 2)}</pre>
+          </code>
+        </>
+      )}
       {!receipt.current.righe.length && (
         <p className="text-center text-danger">
           Non puoi proseguire senza prodotti
